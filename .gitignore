@@ -45,6 +45,9 @@ typings/
 # output directory
 dist
 
+# vscode config
+.vscode
+
 # Optional eslint cache
 .eslintcache
 
