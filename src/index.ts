@@ -1,37 +1,31 @@
 import { ApolloServer, gql } from 'apollo-server';
 
-const typeDefs = gql`
-    # Comments in GraphQL are defined with the hash (#) symbol.
+// types
+import { typeDef as Character } from './schemas/character';
+import { typeDef as Comic } from './schemas/comic';
+import { typeDef as Image } from './schemas/image';
 
-    # This "Book" type can be used in other type declarations.
-    type Book {
-        title: String
-        author: String
-    }
-
-    # The "Query" type is the root of all GraphQL queries.
-    # (A "Mutation" type will be covered later on.)
+// Query
+const Query = `
     type Query {
-        books: [Book]
+        character: [Character]
+        comic: [Comic]
     }
 `;
 
-const mockDB = [
-    {
-        title: 'Harry Potter and the Chamber of Secrets',
-        author: 'J.K. Rowling',
-    },
-    {
-        title: 'Jurassic Park',
-        author: 'Michael Crichton',
-    }
-]
-
 const resolvers = {
     Query: {
-      books: () => mockDB,
+      character: () => mockDB.characters,
+      comic: () => mockDB.comics
     },
 };
+
+const typeDefs = gql`
+    ${Query}
+    ${Character}
+    ${Comic}
+    ${Image}
+`;
 
 const mockDB = {
     characters: [
