@@ -1,0 +1,27 @@
+{
+  "name": "marvel-rest-2-graphql-wrapper",
+  "version": "0.0.1",
+  "description": "wrap marvel rest API with graphql server",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node dist/index.js"
+  },
+  "keywords": [
+    "graphql",
+    "rest",
+    "typescript"
+  ],
+  "author": "David Maggi <musashi.miyamoto81@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^3.2.2"
+  },
+  "dependencies": {
+    "@types/graphql": "^14.0.4",
+    "apollo-server": "^2.3.1",
+    "graphql": "^14.0.2"
+  }
+}
