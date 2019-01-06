@@ -1,4 +1,9 @@
 import { ApolloServer, gql } from 'apollo-server';
+import merge from 'lodash.merge';
+import * as config from './marvel.config.json';
+
+// API url
+const apiURL:String = `${config.baseUrl}/${config.apiVersion}/${config.rootPath}/`; 
 
 // types
 import { typeDef as Character } from './schemas/character';
@@ -15,14 +20,6 @@ const Query = `
     }
 `;
 
-const resolvers = {
-    Query: {
-      character: () => mockDB.characters,
-      comic: () => mockDB.comics,
-      story: () => null
-    },
-};
-
 const typeDefs = gql`
     ${Query}
     ${Character}
@@ -31,19 +28,13 @@ const typeDefs = gql`
     ${Image}
 `;
 
-const mockDB = {
-    characters: [
-        { id: "character01", name: "Jackass man", description: "this guy is the Al Bundy of super heroes", thumbnail: { path: "image/path/file", extension: "png" }, comics: ["comic01", "comic03"] },
-        { id: "character02", name: "the strange doctor", description: "The eponymous guy", thumbnail: { path: "image/path/file", extension: "png" }, comics: ["comic01"] },
-        { id: "character03", name: "Tarantula man", description: "same as spider man but bigger", thumbnail: { path: "image/path/file", extension: "png" }, comics: ["comic02"] },
-        { id: "character04", name: "Spider man", description: "the guy that sticks to walls", thumbnail: { path: "image/path/file", extension: "png" }, comics: ["comic02"] }
-    ],
-    comics: [
-        { id: "comic01", title: "Docteur Strange", issueNumber: 3, description: "some comic book", format: "paper", pageCount: 233, thumbnail: { path: "image/path/file", extension: "png" }, characters: ["character01", "character02"] },
-        { id: "comic02", title: "Amazing Tarantula man", issueNumber: 345, description: "some other comic book", format: "hard cover", pageCount: 103, thumbnail: { path: "image/path/file", extension: "png" }, characters: ["character04", "character03"] },
-        { id: "comic03", title: "The invincible Jackass man", issueNumber: 5, description: "yet another comic book", format: "hard cover", pageCount: 2, thumbnail: { path: "image/path/file", extension: "png" }, characters: ["character01"] }
-    ]
-}
+// resolvers
+import { resolver as CharacterResolver } from './resolvers/character';
+import { resolver as ComicResolver } from './resolvers/comic';
+import { resolver as StoryResolver } from './resolvers/story';
+import { resolver as ImageResolver } from './resolvers/image';
+
+const resolvers = merge({}, CharacterResolver, ComicResolver, StoryResolver, ImageResolver);
 
 const server = new ApolloServer({ typeDefs, resolvers });
 server.listen().then(({ url }:any) => {

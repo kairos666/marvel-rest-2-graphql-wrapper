@@ -21,7 +21,9 @@
   },
   "dependencies": {
     "@types/graphql": "^14.0.4",
+    "@types/lodash.merge": "^4.6.4",
     "apollo-server": "^2.3.1",
-    "graphql": "^14.0.2"
+    "graphql": "^14.0.2",
+    "lodash.merge": "^4.6.1"
   }
 }
