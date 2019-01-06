@@ -1,0 +1,5 @@
+{
+    "baseUrl": "https://gateway.marvel.com",
+    "apiVersion": "v1",
+    "rootPath": "public"
+}
