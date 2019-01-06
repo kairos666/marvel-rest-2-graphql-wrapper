@@ -10,24 +10,13 @@ import { typeDef as Character } from './schemas/character';
 import { typeDef as Comic } from './schemas/comic';
 import { typeDef as Story } from './schemas/story';
 import { typeDef as Image } from './schemas/image';
+import { typeDef as Query } from './schemas/query';
 
-// Query
-const Query = `
-    type Query {
-        character: [Character]
-        comic: [Comic]
-        story: [Story]
-    }
-`;
+const typeDefs = gql`${[Query, Character, Comic, Story, Image].join('\n')}`;
 
-const typeDefs = gql`
-    ${Query}
-    ${Character}
-    ${Comic}
-    ${Story}
-    ${Image}
-`;
-
+/**
+ * GRAPHQL RESOLVER
+ */
 // resolvers
 import { resolver as CharacterResolver } from './resolvers/character';
 import { resolver as ComicResolver } from './resolvers/comic';
