@@ -25,7 +25,8 @@ export const typeDef = `
         # creators: ResourceList
         "A resource list containing the characters which appear in this comic."
         characters: [Character]
-        # stories: ResourceList
+        "A resource list containing the stories which appear in this comic."
+        stories: [Story]
         # events: ResourceList
     }
 `;

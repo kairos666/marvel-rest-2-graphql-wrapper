@@ -3,6 +3,7 @@ import { ApolloServer, gql } from 'apollo-server';
 // types
 import { typeDef as Character } from './schemas/character';
 import { typeDef as Comic } from './schemas/comic';
+import { typeDef as Story } from './schemas/story';
 import { typeDef as Image } from './schemas/image';
 
 // Query
@@ -10,13 +11,15 @@ const Query = `
     type Query {
         character: [Character]
         comic: [Comic]
+        story: [Story]
     }
 `;
 
 const resolvers = {
     Query: {
       character: () => mockDB.characters,
-      comic: () => mockDB.comics
+      comic: () => mockDB.comics,
+      story: () => null
     },
 };
 
@@ -24,6 +27,7 @@ const typeDefs = gql`
     ${Query}
     ${Character}
     ${Comic}
+    ${Story}
     ${Image}
 `;
 

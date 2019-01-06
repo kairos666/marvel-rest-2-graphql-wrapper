@@ -16,7 +16,8 @@ export const typeDef = `
         thumbnail: Image
         "A resource list containing comics which feature this character."
         comics: [Comic]
-        # stories: ResourceList
+        "A resource list of stories in which this character appears."
+        stories: [Story]
         # events: ResourceList
         # series: ResourceList
     }
