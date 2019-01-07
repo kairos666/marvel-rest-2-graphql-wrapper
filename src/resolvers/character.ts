@@ -3,11 +3,13 @@ import mockData from '../mockData.json';
 export const resolver = {
     Query: {
         characters: () => mockData.characters,
-        character: (_:any, args:any) => mockData.characters.find(item => (item.id === args.id))
+        character: async (_source:any, { id }, { dataSources }) => {
+            return dataSources.marvelAPI.getCharacterById(id);
+        }
     },
     Character: {
-        comics: (character:any) => {
-            return character.comics.map(comicId => mockData.comics.find(item => (item.id === comicId)));
+        comics: async (character:any, _args:any, { dataSources }) => {
+            return Promise.all(character.comics.map(comic => dataSources.marvelAPI.getComicById(comic.id)));
         },
         stories: (character:any) => {
             return character.stories; // TODO

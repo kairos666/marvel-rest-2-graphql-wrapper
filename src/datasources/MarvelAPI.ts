@@ -1,6 +1,7 @@
 import { RESTDataSource, RequestOptions } from 'apollo-datasource-rest';
 import * as config from '../marvel.config.json';
 import crypto from 'crypto';
+import { getIdFromResourceURI } from '../utils';
 
 // API url
 const apiURL:string = `${config.baseUrl}/${config.apiVersion}/${config.rootPath}/`;
@@ -13,7 +14,7 @@ export class MarvelAPI extends RESTDataSource {
 
     willSendRequest(request: RequestOptions ) {
         // request authorization - https://developer.marvel.com/documentation/authorization
-        const ts = new Date().toString();
+        const ts = new Date().getTime().toString();
         const publicApiKey = this.context.publicApiKey;
         const hash = crypto.createHash('md5').update(`${ts}${this.context.privateApiKey}${publicApiKey}`).digest('hex');
         request.params.set('ts', ts);
@@ -27,7 +28,26 @@ export class MarvelAPI extends RESTDataSource {
     }
 
     async getCharacterById(id: Number) {
-        return this.get(`characters/${id}`);
+        return this.get(`characters/${id}`).then(resp => {
+            const characterResp = resp.data.results[0] || false;
+            return (characterResp)
+            ? {
+                id: characterResp.id.toString(),
+                name: characterResp.name,
+                description: characterResp.description,
+                thumbnail: characterResp.thumbnail,
+                comics: characterResp.comics.items.map(item => {
+                    return {
+                        id: getIdFromResourceURI(item.resourceURI),
+                        title: item.name
+                    }
+                }) || [],
+                stories: characterResp.stories.items || [],
+                events: characterResp.events.items || [],
+                series: characterResp.series.items || []
+            }
+            : null;
+        });
     }
 
     // Comics
@@ -36,7 +56,28 @@ export class MarvelAPI extends RESTDataSource {
     }
 
     async getComicById(id: Number) {
-        return this.get(`comics/${id}`);
+        return this.get(`comics/${id}`).then(resp => {
+            const comicResp = resp.data.results[0] || false;
+            return (comicResp)
+            ? {
+                id: comicResp.id.toString(),
+                title: comicResp.title,
+                issueNumber: comicResp.issueNumber,
+                description: comicResp.description,
+                format: comicResp.format,
+                pageCount: comicResp.pageCount,
+                thumbnail: comicResp.thumbnail,
+                images: comicResp.images.items || [],
+                characters: comicResp.characters.items.map(item => {
+                    return {
+                        id: getIdFromResourceURI(item.resourceURI),
+                        name: item.name
+                    }
+                }) || [],
+                stories: comicResp.stories.items || []
+            }
+            : null;
+        });
     }
 
     // Stories

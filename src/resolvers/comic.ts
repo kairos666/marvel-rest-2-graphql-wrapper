@@ -6,8 +6,8 @@ export const resolver = {
         comic: (_:any, args:any) => mockData.comics.find(item => (item.id === args.id))
     },
     Comic: {
-        characters: (comic:any) => {
-            return comic.characters.map(characterId => mockData.characters.find(item => (item.id === characterId)));
+        characters: async (comic:any, _args:any, { dataSources }) => {
+            return Promise.all(comic.characters.map(character => dataSources.marvelAPI.getCharacterById(character.id)));
         },
         stories: (comic:any) => {
             return comic.stories; // TODO
