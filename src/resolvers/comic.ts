@@ -9,8 +9,8 @@ export const resolver = {
         characters: async (comic:any, _args:any, { dataSources }) => {
             return Promise.all(comic.characters.map(character => dataSources.marvelAPI.getCharacterById(character.id)));
         },
-        stories: (comic:any) => {
-            return comic.stories; // TODO
+        stories: async (comic:any, _args:any, { dataSources }) => {
+            return Promise.all(comic.stories.map(story => dataSources.marvelAPI.getStoryById(story.id)));
         }
     }
 };

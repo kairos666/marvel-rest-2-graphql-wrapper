@@ -11,8 +11,8 @@ export const resolver = {
         comics: async (character:any, _args:any, { dataSources }) => {
             return Promise.all(character.comics.map(comic => dataSources.marvelAPI.getComicById(comic.id)));
         },
-        stories: (character:any) => {
-            return character.stories; // TODO
+        stories: async (character:any, _args:any, { dataSources }) => {
+            return Promise.all(character.stories.map(story => dataSources.marvelAPI.getStoryById(story.id)));
         }
     }
 };

@@ -23,7 +23,7 @@ export const typeDef = `
         "A resource list of characters which appear in this story."
         characters: [Character]
         # creators	CreatorList	"A resource list of creators who worked on this story."
-        "Name of the issue in which this story was originally published."
-        originalissue: String
+        "Comic in which this story was originally published."
+        originalIssue: Comic
     }
 `;

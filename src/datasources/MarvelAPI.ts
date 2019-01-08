@@ -42,7 +42,12 @@ export class MarvelAPI extends RESTDataSource {
                         title: name
                     }
                 }),
-                stories: get(characterResp, 'stories.items', [])
+                stories: get(characterResp, 'stories.items', []).map(({ resourceURI, name }) => {
+                    return {
+                        id: getIdFromResourceURI(resourceURI),
+                        title: name
+                    }
+                })
             };
             
             return Object.assign(characterResp, formattedCharacterFields);
@@ -62,14 +67,19 @@ export class MarvelAPI extends RESTDataSource {
             // formating needed fields
             let formattedComicFields = {
                 id: comicResp.id.toString(),
-                images: comicResp.images.items || [],
+                images: get(comicResp, 'images.items', []),
                 characters: get(comicResp, 'characters.items', []).map(({ resourceURI, name }) => {
                     return {
                         id: getIdFromResourceURI(resourceURI),
                         name: name
                     }
-                }) || [],
-                stories: get(comicResp, 'stories.items', [])
+                }),
+                stories: get(comicResp, 'stories.items', []).map(({ resourceURI, name }) => {
+                    return {
+                        id: getIdFromResourceURI(resourceURI),
+                        title: name
+                    }
+                })
             };
             
             return Object.assign(comicResp, formattedComicFields);
@@ -82,7 +92,31 @@ export class MarvelAPI extends RESTDataSource {
     }
 
     async getStoryById(id: Number) {
-        return this.get(`stories/${id}`);
+        return this.get(`stories/${id}`).then(resp => {
+            const storyResp = resp.data.results[0] || false;
+            if (!storyResp) return null;
+
+            // formating needed fields
+            let formattedStoryFields = {
+                id: storyResp.id.toString(),
+                images: get(storyResp, 'images.items', []),
+                characters: get(storyResp, 'characters.items', []).map(({ resourceURI, name }) => {
+                    return {
+                        id: getIdFromResourceURI(resourceURI),
+                        name: name
+                    }
+                }),
+                comics: get(storyResp, 'comics.items', []).map(({ resourceURI, name }) => {
+                    return {
+                        id: getIdFromResourceURI(resourceURI),
+                        title: name
+                    }
+                }),
+                originalIssue: (get(storyResp, 'originalIssue.resourceURI', false)) ? getIdFromResourceURI(storyResp.originalIssue.resourceURI) : null
+            };
+            
+            return Object.assign(storyResp, formattedStoryFields);
+        });
     }
 }
 
