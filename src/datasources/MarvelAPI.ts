@@ -67,7 +67,7 @@ export class MarvelAPI extends RESTDataSource {
             // formating needed fields
             let formattedComicFields = {
                 id: comicResp.id.toString(),
-                images: get(comicResp, 'images.items', []),
+                images: get(comicResp, 'images', []),
                 characters: get(comicResp, 'characters.items', []).map(({ resourceURI, name }) => {
                     return {
                         id: getIdFromResourceURI(resourceURI),
@@ -99,7 +99,7 @@ export class MarvelAPI extends RESTDataSource {
             // formating needed fields
             let formattedStoryFields = {
                 id: storyResp.id.toString(),
-                images: get(storyResp, 'images.items', []),
+                images: get(storyResp, 'images', []),
                 characters: get(storyResp, 'characters.items', []).map(({ resourceURI, name }) => {
                     return {
                         id: getIdFromResourceURI(resourceURI),
