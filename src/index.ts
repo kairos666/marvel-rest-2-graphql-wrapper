@@ -1,5 +1,5 @@
 import { ApolloServer, gql, IResolvers  } from 'apollo-server';
-import merge from 'lodash.merge';
+import { merge } from 'lodash';
 
 /**
  * GRAPHQL SCHEMA

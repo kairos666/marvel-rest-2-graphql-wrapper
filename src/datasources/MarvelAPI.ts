@@ -2,6 +2,7 @@ import { RESTDataSource, RequestOptions } from 'apollo-datasource-rest';
 import * as config from '../marvel.config.json';
 import crypto from 'crypto';
 import { getIdFromResourceURI } from '../utils';
+import { get } from 'lodash';
 
 // API url
 const apiURL:string = `${config.baseUrl}/${config.apiVersion}/${config.rootPath}/`;
@@ -30,23 +31,21 @@ export class MarvelAPI extends RESTDataSource {
     async getCharacterById(id: Number) {
         return this.get(`characters/${id}`).then(resp => {
             const characterResp = resp.data.results[0] || false;
-            return (characterResp)
-            ? {
+            if (!characterResp) return null;
+
+            // formating needed fields
+            let formattedCharacterFields = {
                 id: characterResp.id.toString(),
-                name: characterResp.name,
-                description: characterResp.description,
-                thumbnail: characterResp.thumbnail,
-                comics: characterResp.comics.items.map(item => {
+                comics: get(characterResp, 'comics.items', []).map(({ resourceURI, name }) => {
                     return {
-                        id: getIdFromResourceURI(item.resourceURI),
-                        title: item.name
+                        id: getIdFromResourceURI(resourceURI),
+                        title: name
                     }
-                }) || [],
-                stories: characterResp.stories.items || [],
-                events: characterResp.events.items || [],
-                series: characterResp.series.items || []
-            }
-            : null;
+                }),
+                stories: get(characterResp, 'stories.items', [])
+            };
+            
+            return Object.assign(characterResp, formattedCharacterFields);
         });
     }
 
@@ -58,25 +57,22 @@ export class MarvelAPI extends RESTDataSource {
     async getComicById(id: Number) {
         return this.get(`comics/${id}`).then(resp => {
             const comicResp = resp.data.results[0] || false;
-            return (comicResp)
-            ? {
+            if (!comicResp) return null;
+
+            // formating needed fields
+            let formattedComicFields = {
                 id: comicResp.id.toString(),
-                title: comicResp.title,
-                issueNumber: comicResp.issueNumber,
-                description: comicResp.description,
-                format: comicResp.format,
-                pageCount: comicResp.pageCount,
-                thumbnail: comicResp.thumbnail,
                 images: comicResp.images.items || [],
-                characters: comicResp.characters.items.map(item => {
+                characters: get(comicResp, 'characters.items', []).map(({ resourceURI, name }) => {
                     return {
-                        id: getIdFromResourceURI(item.resourceURI),
-                        name: item.name
+                        id: getIdFromResourceURI(resourceURI),
+                        name: name
                     }
                 }) || [],
-                stories: comicResp.stories.items || []
-            }
-            : null;
+                stories: get(comicResp, 'stories.items', [])
+            };
+            
+            return Object.assign(comicResp, formattedComicFields);
         });
     }
 
