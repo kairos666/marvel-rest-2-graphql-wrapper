@@ -1,8 +1,6 @@
-import mockData from '../mockData.json';
-
 export const resolver = {
     Query: {
-        characters: () => mockData.characters,
+        characters: () => [],
         character: async (_source:any, { id }, { dataSources }) => {
             return dataSources.marvelAPI.getCharacterById(id);
         }
