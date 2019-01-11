@@ -13,6 +13,12 @@ export const resolver = {
         },
         stories: async (character:any, _args:any, { dataSources }) => {
             return Promise.all(character.stories.map(story => dataSources.marvelAPI.getStoryById(story.id)));
+        },
+        events: async (character:any, _args:any, { dataSources }) => {
+            return Promise.all(character.events.map(event => dataSources.marvelAPI.getEventById(event.id)));
+        },
+        series: async (character:any, _args:any, { dataSources }) => {
+            return Promise.all(character.series.map(serie => dataSources.marvelAPI.getSerieById(serie.id)));
         }
     }
 };

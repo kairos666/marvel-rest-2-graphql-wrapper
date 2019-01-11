@@ -16,17 +16,19 @@ export const typeDef = `
         format: String
         "The number of story pages in the comic."
         pageCount: Int
-        # series: SeriesSummary
-        # dates: [ComicDates]
         "The representative image for this comic."
         thumbnail: Image
         "A list of promotional images associated with this comic."
         images: [Image]
-        # creators: ResourceList
+        "A resource list containing the creators associated with this comic."
+        creators: [Creator]!
         "A resource list containing the characters which appear in this comic."
         characters: [Character]!
         "A resource list containing the stories which appear in this comic."
-        stories: [Story]
-        # events: ResourceList
+        stories: [Story]!
+        "A resource list containing the events in which this comic appears."
+        events: [Event]!
+        "A summary representation of the series to which this comic belongs."
+        series: [Serie]!
     }
 `;

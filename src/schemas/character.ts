@@ -18,7 +18,9 @@ export const typeDef = `
         comics: [Comic]!
         "A resource list of stories in which this character appears."
         stories: [Story]!
-        # events: ResourceList
-        # series: ResourceList
+        "A resource list of events in which this character appears."
+        events: [Event]!
+        "A resource list of series in which this character appears."
+        series: [Serie]!
     }
 `;

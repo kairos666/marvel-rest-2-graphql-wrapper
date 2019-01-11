@@ -14,6 +14,15 @@ export const resolver = {
         },
         characters: async (story:any, _args:any, { dataSources }) => {
             return Promise.all(story.characters.map(character => dataSources.marvelAPI.getCharacterById(character.id)));
+        },
+        series: async (story:any, _args:any, { dataSources }) => {
+            return Promise.all(story.series.map(serie => dataSources.marvelAPI.getSerieById(serie.id)));
+        },
+        events: async (story:any, _args:any, { dataSources }) => {
+            return Promise.all(story.events.map(event => dataSources.marvelAPI.getEventById(event.id)));
+        },
+        creators: async (story:any, _args:any, { dataSources }) => {
+            return Promise.all(story.creators.map(creator => dataSources.marvelAPI.getCreatorById(creator.id)));
         }
     }
 };

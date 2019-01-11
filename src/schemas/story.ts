@@ -17,12 +17,15 @@ export const typeDef = `
         "The representative image for this story."
         thumbnail: Image
         "A resource list containing comics in which this story takes place."
-        comics: [Comic]
-        # series	SeriesList	"A resource list containing series in which this story appears."
-        # events	EventList	"A resource list of the events in which this story appears."
+        comics: [Comic]!
+        "A resource list containing series in which this story appears."
+        series:	[Serie]!
+        "A resource list of the events in which this story appears."
+        events: [Event]!
         "A resource list of characters which appear in this story."
-        characters: [Character]
-        # creators	CreatorList	"A resource list of creators who worked on this story."
+        characters: [Character]!
+        "A resource list of creators who worked on this story."
+        creators: [Creator]!
         "Comic in which this story was originally published."
         originalIssue: Comic
     }

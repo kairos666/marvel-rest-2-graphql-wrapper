@@ -9,9 +9,12 @@ import { typeDef as Character } from './schemas/character';
 import { typeDef as Comic } from './schemas/comic';
 import { typeDef as Story } from './schemas/story';
 import { typeDef as Image } from './schemas/image';
+import { typeDef as Event } from './schemas/event';
+import { typeDef as Serie } from './schemas/serie';
+import { typeDef as Creator } from './schemas/creator';
 import { typeDef as Query } from './schemas/query';
 
-const typeDefs = gql`${[Query, Character, Comic, Story, Image].join('\n')}`;
+const typeDefs = gql`${[Query, Character, Comic, Story, Serie, Event, Creator, Image].join('\n')}`;
 
 /**
  * GRAPHQL RESOLVER
@@ -21,9 +24,12 @@ import { resolver as CharacterResolver } from './resolvers/character';
 import { resolver as ComicResolver } from './resolvers/comic';
 import { resolver as StoryResolver } from './resolvers/story';
 import { resolver as ImageResolver } from './resolvers/image';
+import { resolver as EventResolver } from './resolvers/event';
+import { resolver as SerieResolver } from './resolvers/serie';
+import { resolver as CreatorResolver } from './resolvers/creator';
 import { MarvelAPI } from './datasources/MarvelAPI';
 
-const resolvers:IResolvers = merge({}, CharacterResolver, ComicResolver, StoryResolver, ImageResolver);
+const resolvers:IResolvers = merge({}, CharacterResolver, ComicResolver, StoryResolver, SerieResolver, EventResolver, CreatorResolver, ImageResolver);
 
 /**
  * GRAPHQL DATASOURCES

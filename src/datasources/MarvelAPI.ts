@@ -47,6 +47,18 @@ export class MarvelAPI extends RESTDataSource {
                         id: getIdFromResourceURI(resourceURI),
                         title: name
                     }
+                }),
+                series: get(characterResp, 'series.items', []).map(({ resourceURI, name }) => {
+                    return {
+                        id: getIdFromResourceURI(resourceURI),
+                        name: name
+                    }
+                }),
+                events: get(characterResp, 'events.items', []).map(({ resourceURI, name }) => {
+                    return {
+                        id: getIdFromResourceURI(resourceURI),
+                        name: name
+                    }
                 })
             };
             
@@ -78,6 +90,25 @@ export class MarvelAPI extends RESTDataSource {
                     return {
                         id: getIdFromResourceURI(resourceURI),
                         title: name
+                    }
+                }),
+                series: get(comicResp, 'series.items', []).map(({ resourceURI, name }) => {
+                    return {
+                        id: getIdFromResourceURI(resourceURI),
+                        name: name
+                    }
+                }),
+                events: get(comicResp, 'events.items', []).map(({ resourceURI, name }) => {
+                    return {
+                        id: getIdFromResourceURI(resourceURI),
+                        name: name
+                    }
+                }),
+                creators: get(comicResp, 'creators.items', []).map(({ resourceURI, name, role }) => {
+                    return {
+                        id: getIdFromResourceURI(resourceURI),
+                        name: name,
+                        role: role
                     }
                 })
             };
@@ -112,10 +143,179 @@ export class MarvelAPI extends RESTDataSource {
                         title: name
                     }
                 }),
+                series: get(storyResp, 'series.items', []).map(({ resourceURI, name }) => {
+                    return {
+                        id: getIdFromResourceURI(resourceURI),
+                        name: name
+                    }
+                }),
+                events: get(storyResp, 'events.items', []).map(({ resourceURI, name }) => {
+                    return {
+                        id: getIdFromResourceURI(resourceURI),
+                        name: name
+                    }
+                }),
+                creators: get(storyResp, 'creators.items', []).map(({ resourceURI, name, role }) => {
+                    return {
+                        id: getIdFromResourceURI(resourceURI),
+                        name: name,
+                        role: role
+                    }
+                }),
                 originalIssue: (get(storyResp, 'originalIssue.resourceURI', false)) ? getIdFromResourceURI(storyResp.originalIssue.resourceURI) : null
             };
             
             return Object.assign(storyResp, formattedStoryFields);
+        });
+    }
+
+    // Series
+    async findSeries(params:any) {
+        return params;
+    }
+
+    async getSerieById(id: Number) {
+        return this.get(`series/${id}`).then(resp => {
+            const serieResp = resp.data.results[0] || false;
+            if (!serieResp) return null;
+
+            // formating needed fields
+            let formattedSerieFields = {
+                id: serieResp.id.toString(),
+                characters: get(serieResp, 'characters.items', []).map(({ resourceURI, name }) => {
+                    return {
+                        id: getIdFromResourceURI(resourceURI),
+                        name: name
+                    }
+                }),
+                comics: get(serieResp, 'comics.items', []).map(({ resourceURI, name }) => {
+                    return {
+                        id: getIdFromResourceURI(resourceURI),
+                        title: name
+                    }
+                }),
+                events: get(serieResp, 'events.items', []).map(({ resourceURI, name }) => {
+                    return {
+                        id: getIdFromResourceURI(resourceURI),
+                        name: name
+                    }
+                }),
+                stories: get(serieResp, 'stories.items', []).map(({ resourceURI, name }) => {
+                    return {
+                        id: getIdFromResourceURI(resourceURI),
+                        title: name
+                    }
+                }),
+                creators: get(serieResp, 'creators.items', []).map(({ resourceURI, name, role }) => {
+                    return {
+                        id: getIdFromResourceURI(resourceURI),
+                        name: name,
+                        role: role
+                    }
+                }),
+                next: (get(serieResp, 'next.resourceURI', false)) ? getIdFromResourceURI(serieResp.next.resourceURI) : null,
+                previous: (get(serieResp, 'previous.resourceURI', false)) ? getIdFromResourceURI(serieResp.previous.resourceURI) : null
+            };
+            
+            return Object.assign(serieResp, formattedSerieFields);
+        });
+    }
+
+    // Events
+    async findEvents(params:any) {
+        return params;
+    }
+
+    async getEventById(id: Number) {
+        return this.get(`stories/${id}`).then(resp => {
+            const eventResp = resp.data.results[0] || false;
+            if (!eventResp) return null;
+
+            // formating needed fields
+            let formattedEventFields = {
+                id: eventResp.id.toString(),
+                characters: get(eventResp, 'characters.items', []).map(({ resourceURI, name, role }) => {
+                    return {
+                        id: getIdFromResourceURI(resourceURI),
+                        name: name,
+                        role: role
+                    }
+                }),
+                comics: get(eventResp, 'comics.items', []).map(({ resourceURI, name }) => {
+                    return {
+                        id: getIdFromResourceURI(resourceURI),
+                        title: name
+                    }
+                }),
+                series: get(eventResp, 'series.items', []).map(({ resourceURI, name }) => {
+                    return {
+                        id: getIdFromResourceURI(resourceURI),
+                        name: name
+                    }
+                }),
+                stories: get(eventResp, 'stories.items', []).map(({ resourceURI, name, type }) => {
+                    return {
+                        id: getIdFromResourceURI(resourceURI),
+                        title: name,
+                        type: type
+                    }
+                }),
+                creators: get(eventResp, 'creators.items', []).map(({ resourceURI, name, role }) => {
+                    return {
+                        id: getIdFromResourceURI(resourceURI),
+                        name: name,
+                        role: role
+                    }
+                }),
+                next: (get(eventResp, 'next.resourceURI', false)) ? getIdFromResourceURI(eventResp.next.resourceURI) : null,
+                previous: (get(eventResp, 'previous.resourceURI', false)) ? getIdFromResourceURI(eventResp.previous.resourceURI) : null
+            };
+            
+            return Object.assign(eventResp, formattedEventFields);
+        });
+    }
+
+    // Creators
+    async findCreators(params:any) {
+        return params;
+    }
+
+    async getCreatorById(id: Number) {
+        return this.get(`stories/${id}`).then(resp => {
+            const creatorResp = resp.data.results[0] || false;
+            if (!creatorResp) return null;
+
+            // formating needed fields
+            let formattedCreatorFields = {
+                id: creatorResp.id.toString(),
+                comics: get(creatorResp, 'comics.items', []).map(({ resourceURI, name }) => {
+                    return {
+                        id: getIdFromResourceURI(resourceURI),
+                        title: name
+                    }
+                }),
+                series: get(creatorResp, 'series.items', []).map(({ resourceURI, name }) => {
+                    return {
+                        id: getIdFromResourceURI(resourceURI),
+                        name: name
+                    }
+                }),
+                stories: get(creatorResp, 'stories.items', []).map(({ resourceURI, name, type }) => {
+                    return {
+                        id: getIdFromResourceURI(resourceURI),
+                        title: name,
+                        type: type
+                    }
+                }),
+                events: get(creatorResp, 'events.items', []).map(({ resourceURI, name }) => {
+                    return {
+                        id: getIdFromResourceURI(resourceURI),
+                        name: name
+                    }
+                })
+            };
+            
+            return Object.assign(creatorResp, formattedCreatorFields);
         });
     }
 }
