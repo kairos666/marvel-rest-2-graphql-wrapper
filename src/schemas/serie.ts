@@ -34,4 +34,20 @@ export const typeDef = `
         "serie which preceded this serie."
         previous: Serie
     }
+
+    """
+    A list of serie resources
+    """
+    type SerieList {
+        "Skipped the specified number of resources in the result set."
+        offset: Int
+        "Limited the result set to the specified number of resources."
+        limit: Int
+        "total number of available resources"
+        total: Int
+        "number of results in this set"
+        count: Int
+        "actual list of comics"
+        results: [Serie]!
+    }
 `;

@@ -29,4 +29,20 @@ export const typeDef = `
         "Comic in which this story was originally published."
         originalIssue: Comic
     }
+
+    """
+    A list of story resources
+    """
+    type StoryList {
+        "Skipped the specified number of resources in the result set."
+        offset: Int
+        "Limited the result set to the specified number of resources."
+        limit: Int
+        "total number of available resources"
+        total: Int
+        "number of results in this set"
+        count: Int
+        "actual list of comics"
+        results: [Story]!
+    }
 `;

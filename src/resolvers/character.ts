@@ -7,16 +7,16 @@ export const resolver = {
     },
     Character: {
         comics: async (character:any, _args:any, { dataSources }) => {
-            return Promise.all(character.comics.map(comic => dataSources.marvelAPI.getComicById(comic.id)));
+            return dataSources.marvelAPI.getComicsByCharacterId(Object.assign({ id: character.id }, _args));
         },
         stories: async (character:any, _args:any, { dataSources }) => {
-            return Promise.all(character.stories.map(story => dataSources.marvelAPI.getStoryById(story.id)));
+            return dataSources.marvelAPI.getStoriesByCharacterId(Object.assign({ id: character.id }, _args));
         },
         events: async (character:any, _args:any, { dataSources }) => {
-            return Promise.all(character.events.map(event => dataSources.marvelAPI.getEventById(event.id)));
+            return dataSources.marvelAPI.getEventsByCharacterId(Object.assign({ id: character.id }, _args));
         },
         series: async (character:any, _args:any, { dataSources }) => {
-            return Promise.all(character.series.map(serie => dataSources.marvelAPI.getSerieById(serie.id)));
+            return dataSources.marvelAPI.getSeriesByCharacterId(Object.assign({ id: character.id }, _args));
         }
     }
 };

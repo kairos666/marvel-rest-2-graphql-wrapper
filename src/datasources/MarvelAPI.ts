@@ -1,7 +1,8 @@
 import { RESTDataSource, RequestOptions } from 'apollo-datasource-rest';
+import { ApolloError } from 'apollo-server';
 import * as config from '../marvel.config.json';
 import crypto from 'crypto';
-import { getIdFromResourceURI } from '../utils';
+import { getIdFromResourceURI, constrainSearchLimit } from '../utils';
 import { get } from 'lodash';
 
 // API url
@@ -23,7 +24,7 @@ export class MarvelAPI extends RESTDataSource {
         request.params.set('hash', hash);
     }
 
-    // Characters
+    // CHARACTER RESOURCE REST ENDPOINTS HANDLERS
     async findCharacters(params:FindCharactersParams) {
         return params;
     }
@@ -35,35 +36,195 @@ export class MarvelAPI extends RESTDataSource {
 
             // formating needed fields
             let formattedCharacterFields = {
-                id: characterResp.id.toString(),
-                comics: get(characterResp, 'comics.items', []).map(({ resourceURI, name }) => {
-                    return {
-                        id: getIdFromResourceURI(resourceURI),
-                        title: name
-                    }
-                }),
-                stories: get(characterResp, 'stories.items', []).map(({ resourceURI, name }) => {
-                    return {
-                        id: getIdFromResourceURI(resourceURI),
-                        title: name
-                    }
-                }),
-                series: get(characterResp, 'series.items', []).map(({ resourceURI, name }) => {
-                    return {
-                        id: getIdFromResourceURI(resourceURI),
-                        name: name
-                    }
-                }),
-                events: get(characterResp, 'events.items', []).map(({ resourceURI, name }) => {
-                    return {
-                        id: getIdFromResourceURI(resourceURI),
-                        name: name
-                    }
-                })
+                id: characterResp.id.toString()
             };
             
             return Object.assign(characterResp, formattedCharacterFields);
         });
+    }
+
+    async getComicsByCharacterId(params:FindComicsByItemParams) {
+        const resourceListFunc:Function = this.getResourcesByParentResourceFunc('comics', 'character', 'characters', itemResp => {
+            // formating needed fields
+            let formattedItemFields = {
+                id: itemResp.id.toString(),
+                images: get(itemResp, 'images', []),
+                characters: get(itemResp, 'characters.items', []).map(({ resourceURI, name }) => {
+                    return {
+                        id: getIdFromResourceURI(resourceURI),
+                        name: name
+                    }
+                }),
+                stories: get(itemResp, 'stories.items', []).map(({ resourceURI, name }) => {
+                    return {
+                        id: getIdFromResourceURI(resourceURI),
+                        title: name
+                    }
+                }),
+                series: get(itemResp, 'series.items', []).map(({ resourceURI, name }) => {
+                    return {
+                        id: getIdFromResourceURI(resourceURI),
+                        name: name
+                    }
+                }),
+                events: get(itemResp, 'events.items', []).map(({ resourceURI, name }) => {
+                    return {
+                        id: getIdFromResourceURI(resourceURI),
+                        name: name
+                    }
+                }),
+                creators: get(itemResp, 'creators.items', []).map(({ resourceURI, name, role }) => {
+                    return {
+                        id: getIdFromResourceURI(resourceURI),
+                        name: name,
+                        role: role
+                    }
+                })
+            };
+            
+            return Object.assign(itemResp, formattedItemFields);
+        }, { orderBy: 'title' });
+
+        return resourceListFunc(params);
+    }
+
+    async getStoriesByCharacterId(params:FindStoriesByItemParams) {
+        const resourceListFunc:Function = this.getResourcesByParentResourceFunc('stories', 'character', 'characters', itemResp => {
+            // formating needed fields
+            let formattedItemFields = {
+                id: itemResp.id.toString(),
+                characters: get(itemResp, 'characters.items', []).map(({ resourceURI, name }) => {
+                    return {
+                        id: getIdFromResourceURI(resourceURI),
+                        name: name
+                    }
+                }),
+                comics: get(itemResp, 'comics.items', []).map(({ resourceURI, name }) => {
+                    return {
+                        id: getIdFromResourceURI(resourceURI),
+                        title: name
+                    }
+                }),
+                series: get(itemResp, 'series.items', []).map(({ resourceURI, name }) => {
+                    return {
+                        id: getIdFromResourceURI(resourceURI),
+                        name: name
+                    }
+                }),
+                events: get(itemResp, 'events.items', []).map(({ resourceURI, name }) => {
+                    return {
+                        id: getIdFromResourceURI(resourceURI),
+                        name: name
+                    }
+                }),
+                creators: get(itemResp, 'creators.items', []).map(({ resourceURI, name, role }) => {
+                    return {
+                        id: getIdFromResourceURI(resourceURI),
+                        name: name,
+                        role: role
+                    }
+                }),
+                originalIssue: (get(itemResp, 'originalIssue.resourceURI', false)) ? getIdFromResourceURI(itemResp.originalIssue.resourceURI) : null
+            };
+            
+            return Object.assign(itemResp, formattedItemFields);
+        });
+
+        return resourceListFunc(params);
+    }
+    
+    async getEventsByCharacterId(params:FindEventsByItemParams) {
+        const resourceListFunc:Function = this.getResourcesByParentResourceFunc('events', 'character', 'characters', itemResp => {
+            // formating needed fields
+            let formattedItemFields = {
+                id: itemResp.id.toString(),
+                characters: get(itemResp, 'characters.items', []).map(({ resourceURI, name, role }) => {
+                    return {
+                        id: getIdFromResourceURI(resourceURI),
+                        name: name,
+                        role: role
+                    }
+                }),
+                comics: get(itemResp, 'comics.items', []).map(({ resourceURI, name }) => {
+                    return {
+                        id: getIdFromResourceURI(resourceURI),
+                        title: name
+                    }
+                }),
+                series: get(itemResp, 'series.items', []).map(({ resourceURI, name }) => {
+                    return {
+                        id: getIdFromResourceURI(resourceURI),
+                        name: name
+                    }
+                }),
+                stories: get(itemResp, 'stories.items', []).map(({ resourceURI, name, type }) => {
+                    return {
+                        id: getIdFromResourceURI(resourceURI),
+                        title: name,
+                        type: type
+                    }
+                }),
+                creators: get(itemResp, 'creators.items', []).map(({ resourceURI, name, role }) => {
+                    return {
+                        id: getIdFromResourceURI(resourceURI),
+                        name: name,
+                        role: role
+                    }
+                }),
+                next: (get(itemResp, 'next.resourceURI', false)) ? getIdFromResourceURI(itemResp.next.resourceURI) : null,
+                previous: (get(itemResp, 'previous.resourceURI', false)) ? getIdFromResourceURI(itemResp.previous.resourceURI) : null
+            };
+            
+            return Object.assign(itemResp, formattedItemFields);
+        }, { orderBy: 'name' });
+
+        return resourceListFunc(params);
+    }
+
+    async getSeriesByCharacterId(params:FindSeriesByItemParams) {
+        const resourceListFunc:Function = this.getResourcesByParentResourceFunc('series', 'character', 'characters', itemResp => {
+            // formating needed fields
+            let formattedItemFields = {
+                id: itemResp.id.toString(),
+                characters: get(itemResp, 'characters.items', []).map(({ resourceURI, name }) => {
+                    return {
+                        id: getIdFromResourceURI(resourceURI),
+                        name: name
+                    }
+                }),
+                comics: get(itemResp, 'comics.items', []).map(({ resourceURI, name }) => {
+                    return {
+                        id: getIdFromResourceURI(resourceURI),
+                        title: name
+                    }
+                }),
+                events: get(itemResp, 'events.items', []).map(({ resourceURI, name }) => {
+                    return {
+                        id: getIdFromResourceURI(resourceURI),
+                        name: name
+                    }
+                }),
+                stories: get(itemResp, 'stories.items', []).map(({ resourceURI, name }) => {
+                    return {
+                        id: getIdFromResourceURI(resourceURI),
+                        title: name
+                    }
+                }),
+                creators: get(itemResp, 'creators.items', []).map(({ resourceURI, name, role }) => {
+                    return {
+                        id: getIdFromResourceURI(resourceURI),
+                        name: name,
+                        role: role
+                    }
+                }),
+                next: (get(itemResp, 'next.resourceURI', false)) ? getIdFromResourceURI(itemResp.next.resourceURI) : null,
+                previous: (get(itemResp, 'previous.resourceURI', false)) ? getIdFromResourceURI(itemResp.previous.resourceURI) : null
+            };
+            
+            return Object.assign(itemResp, formattedItemFields);
+        }, { orderBy: 'title' });
+
+        return resourceListFunc(params);
     }
 
     // Comics
@@ -130,7 +291,6 @@ export class MarvelAPI extends RESTDataSource {
             // formating needed fields
             let formattedStoryFields = {
                 id: storyResp.id.toString(),
-                images: get(storyResp, 'images', []),
                 characters: get(storyResp, 'characters.items', []).map(({ resourceURI, name }) => {
                     return {
                         id: getIdFromResourceURI(resourceURI),
@@ -227,7 +387,7 @@ export class MarvelAPI extends RESTDataSource {
     }
 
     async getEventById(id: Number) {
-        return this.get(`stories/${id}`).then(resp => {
+        return this.get(`events/${id}`).then(resp => {
             const eventResp = resp.data.results[0] || false;
             if (!eventResp) return null;
 
@@ -281,7 +441,7 @@ export class MarvelAPI extends RESTDataSource {
     }
 
     async getCreatorById(id: Number) {
-        return this.get(`stories/${id}`).then(resp => {
+        return this.get(`creators/${id}`).then(resp => {
             const creatorResp = resp.data.results[0] || false;
             if (!creatorResp) return null;
 
@@ -318,10 +478,67 @@ export class MarvelAPI extends RESTDataSource {
             return Object.assign(creatorResp, formattedCreatorFields);
         });
     }
+
+    // private queryResources(
+    //     resourceNamePlural:String,
+    //     respFormatter:Function,
+    //     defaultParams:any = {}
+    // ):Function {
+    //     return () => {}
+    // }
+
+    private getResourcesByParentResourceFunc(
+        resourceNamePlural:String,
+        parentResourceNameSingular:String, 
+        parentResourceNamePlural:String, 
+        respFormatter:Function,
+        defaultParams:any = {}
+    ):Function {
+        return (params:FindCharactersByItemParams|FindComicsByItemParams|FindCreatorsByItemParams|FindEventsByItemParams|FindSeriesByItemParams|FindStoriesByItemParams) => {
+            if(!params.id) throw new ApolloError(`Empty parameter - ${parentResourceNameSingular} id is required`, '409');
+
+            // format params
+            let _params:FindCharactersByItemParams|FindComicsByItemParams|FindCreatorsByItemParams|FindEventsByItemParams|FindSeriesByItemParams|FindStoriesByItemParams = Object.assign({}, defaultParams, params);
+            _params = constrainSearchLimit(_params);
+            const queryParams = Object.keys(_params)
+                .filter(param => (param !== 'id'))
+                .map((param, index) => `${(index === 0) ? '?' : '&'}${param}=${_params[param]}`)
+                .join('');
+
+            // make call
+            return this.get(`${parentResourceNamePlural}/${_params.id}/${resourceNamePlural}${queryParams}`).then(resp => {
+                const itemsResp = resp.data.results || false;
+                if (!itemsResp) return {
+                    offset: 0,
+                    limit: 20,
+                    total: 0,
+                    count: 0,
+                    results: []
+                };
+
+                let formattedItemsResp = itemsResp.map(respFormatter);
+
+                // return full response
+                return Object.assign(resp.data, { results: formattedItemsResp });
+            });
+        }
+    }
 }
 
-// params interfaces
-interface FindCharactersParams {
+// list search interface
+interface ISearch {
+    /** Order the result set by a field or fields. Add a "-" to the value sort in descending order. Multiple values are given priority in the order in which they are passed. */
+    orderBy?: string;
+    /** Limit the result set to the specified number of resources. */
+    limit?: Number;
+    /** Skip the specified number of resources in the result set. */
+    offset?: Number;
+}
+
+/**
+ * RESOURCE SEARCH PARAMS
+ */
+interface FindCharactersParams extends ISearch {
     /** Return only characters matching the specified full character name (e.g. Spider-Man). */
     name?: string;
     /** Return characters with names that begin with the specified string (e.g. Sp). */
@@ -336,23 +553,17 @@ interface FindCharactersParams {
     events?: Number;
     /** Return only characters which appear the specified stories (accepts a comma-separated list of ids). */
     stories?: Number;
-    /** Order the result set by a field or fields. Add a "-" to the value sort in descending order. Multiple values are given priority in the order in which they are passed. */
-    orderBy?: string;
-    /** Limit the result set to the specified number of resources. */
-    limit?: Number;
-    /** Skip the specified number of resources in the result set. */
-    offset?: Number;
 }
 
-interface FindComicsParams {
+interface FindComicsParams extends ISearch {
     /** Filter by the issue format (e.g. comic, digital comic, hardcover). */
-    format?: string;
-    /** Filter by the issue format type (comic or collection). */
-    formatType?: string;
-    /** Exclude variants (alternate covers, secondary printings, director's cuts, etc.) from the result set. */
-    noVariants?: boolean;
+    format?: 'comic'|'magazine'|'trade paperback'|'hard cover'|'digest'|'graphic novel'|'digital comic'|'infinite comic';
+    /** Filter by the issue format type (comic or collection).Return only characters which have been modified since the specified date. */
+    formatType?: 'comic'|'collection';
+    /** Exclude variant comics from the result set. */
+    noVariants?: Boolean;
     /** Return comics within a predefined date range. */
-    dateDescriptor?: string;
+    dateDescriptor?: 'lastWeek'|'thisWeek'|'nextWeek'|'thisMonth';
     /** Return comics within a predefined date range. Dates must be specified as date1,date2 (e.g. 2013-01-01,2013-01-02). Dates are preferably formatted as YYYY-MM-DD but may be sent as any common date format. */
     dateRange?: Number;
     /** Return only issues in series whose title matches the input. */
@@ -375,10 +586,41 @@ interface FindComicsParams {
     events?: Number;
     /** Return only comics which appear the specified stories (accepts a comma-separated list of ids). */
     stories?: Number;
-    /** Order the result set by a field or fields. Add a "-" to the value sort in descending order. Multiple values are given priority in the order in which they are passed. */
-    orderBy?: string;
-    /** Limit the result set to the specified number of resources. */
-    limit?: Number;
-    /** Skip the specified number of resources in the result set. */
-    offset?: Number;
+    /** Return only comics in which the specified characters appear together (for example in which BOTH Spider-Man and Wolverine appear). */
+    sharedAppearances?: string
+    /** Return only comics in which the specified creators worked together (for example in which BOTH Stan Lee and Jack Kirby did work). */
+    collaborators?: string
+}
+
+/**
+ * RELATED TO RESOURCE SEARCH PARAMS
+ */
+interface FindComicsByItemParams extends FindComicsParams {
+    /** The related resource id */
+    id: Number;
+}
+
+interface FindStoriesByItemParams extends ISearch {
+    /** The related resource id */
+    id: Number;
+}
+
+interface FindEventsByItemParams extends ISearch {
+    /** The related resource id */
+    id: Number;
+}
+
+interface FindSeriesByItemParams extends ISearch {
+    /** The related resource id */
+    id: Number;
+}
+
+interface FindCharactersByItemParams extends FindCharactersParams {
+    /** The related resource id */
+    id: Number;
+}
+
+interface FindCreatorsByItemParams extends ISearch {
+    /** The related resource id */
+    id: Number;
 }

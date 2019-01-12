@@ -29,4 +29,20 @@ export const typeDef = `
         "A resource list containing the events which feature work by this creator."
         events: [Event]!
     }
+
+    """
+    A list of creator resources
+    """
+    type CreatorList {
+        "Skipped the specified number of resources in the result set."
+        offset: Int
+        "Limited the result set to the specified number of resources."
+        limit: Int
+        "total number of available resources"
+        total: Int
+        "number of results in this set"
+        count: Int
+        "actual list of comics"
+        results: [Creator]!
+    }
 `;

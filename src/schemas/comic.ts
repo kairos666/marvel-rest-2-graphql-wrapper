@@ -31,4 +31,20 @@ export const typeDef = `
         "A summary representation of the series to which this comic belongs."
         series: [Serie]!
     }
+
+    """
+    A list of comic resources
+    """
+    type ComicList {
+        "Skipped the specified number of resources in the result set."
+        offset: Int
+        "Limited the result set to the specified number of resources."
+        limit: Int
+        "total number of available resources"
+        total: Int
+        "number of results in this set"
+        count: Int
+        "actual list of comics"
+        results: [Comic]!
+    }
 `;

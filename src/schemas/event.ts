@@ -32,4 +32,20 @@ export const typeDef = `
         "event which preceded this event."
         previous: Event
     }
+
+    """
+    A list of event resources
+    """
+    type EventList {
+        "Skipped the specified number of resources in the result set."
+        offset: Int
+        "Limited the result set to the specified number of resources."
+        limit: Int
+        "total number of available resources"
+        total: Int
+        "number of results in this set"
+        count: Int
+        "actual list of comics"
+        results: [Event]!
+    }
 `;
