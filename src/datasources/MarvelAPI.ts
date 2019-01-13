@@ -35,9 +35,7 @@ export class MarvelAPI extends RESTDataSource {
             if (!characterResp) return null;
 
             // formating needed fields
-            let formattedCharacterFields = {
-                id: characterResp.id.toString()
-            };
+            let formattedCharacterFields = {};
             
             return Object.assign(characterResp, formattedCharacterFields);
         });
@@ -47,7 +45,6 @@ export class MarvelAPI extends RESTDataSource {
         const resourceListFunc:Function = this.getResourcesByParentResourceFunc('comics', 'character', 'characters', itemResp => {
             // formating needed fields
             let formattedItemFields = {
-                id: itemResp.id.toString(),
                 images: get(itemResp, 'images', []),
                 characters: get(itemResp, 'characters.items', []).map(({ resourceURI, name }) => {
                     return {
@@ -92,7 +89,6 @@ export class MarvelAPI extends RESTDataSource {
         const resourceListFunc:Function = this.getResourcesByParentResourceFunc('stories', 'character', 'characters', itemResp => {
             // formating needed fields
             let formattedItemFields = {
-                id: itemResp.id.toString(),
                 characters: get(itemResp, 'characters.items', []).map(({ resourceURI, name }) => {
                     return {
                         id: getIdFromResourceURI(resourceURI),
@@ -137,7 +133,6 @@ export class MarvelAPI extends RESTDataSource {
         const resourceListFunc:Function = this.getResourcesByParentResourceFunc('events', 'character', 'characters', itemResp => {
             // formating needed fields
             let formattedItemFields = {
-                id: itemResp.id.toString(),
                 characters: get(itemResp, 'characters.items', []).map(({ resourceURI, name, role }) => {
                     return {
                         id: getIdFromResourceURI(resourceURI),
@@ -185,7 +180,6 @@ export class MarvelAPI extends RESTDataSource {
         const resourceListFunc:Function = this.getResourcesByParentResourceFunc('series', 'character', 'characters', itemResp => {
             // formating needed fields
             let formattedItemFields = {
-                id: itemResp.id.toString(),
                 characters: get(itemResp, 'characters.items', []).map(({ resourceURI, name }) => {
                     return {
                         id: getIdFromResourceURI(resourceURI),
