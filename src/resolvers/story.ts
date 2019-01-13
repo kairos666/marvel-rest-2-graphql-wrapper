@@ -1,28 +1,30 @@
+import { MarvelAPI } from '../datasources/MarvelAPI';
+
 export const resolver = {
     Query: {
         stories: () => null,
         story: async (_source:any, { id }, { dataSources }) => {
-            return dataSources.marvelAPI.getStoryById(id);
+            return (dataSources.marvelAPI as MarvelAPI).getStoryById(id);
         }
     },
     Story: {
         comics: async (story:any, _args:any, { dataSources }) => {
-            return Promise.all(story.comics.map(comic => dataSources.marvelAPI.getComicById(comic.id)));
+            return (dataSources.marvelAPI as MarvelAPI).getComicsByStoryId(Object.assign({ id: story.id }, _args));
         },
         originalIssue: async (story:any, _args:any, { dataSources }) => {
-            return (story.originalIssue !== null) ? dataSources.marvelAPI.getComicById(story.originalIssue) : null;
+            return (story.originalIssue !== null) ? (dataSources.marvelAPI as MarvelAPI).getComicById(story.originalIssue) : null;
         },
         characters: async (story:any, _args:any, { dataSources }) => {
-            return Promise.all(story.characters.map(character => dataSources.marvelAPI.getCharacterById(character.id)));
+            return (dataSources.marvelAPI as MarvelAPI).getCharactersByStoryId(Object.assign({ id: story.id }, _args));
         },
         series: async (story:any, _args:any, { dataSources }) => {
-            return Promise.all(story.series.map(serie => dataSources.marvelAPI.getSerieById(serie.id)));
+            return (dataSources.marvelAPI as MarvelAPI).getSeriesByStoryId(Object.assign({ id: story.id }, _args));
         },
         events: async (story:any, _args:any, { dataSources }) => {
-            return Promise.all(story.events.map(event => dataSources.marvelAPI.getEventById(event.id)));
+            return (dataSources.marvelAPI as MarvelAPI).getEventsByStoryId(Object.assign({ id: story.id }, _args));
         },
         creators: async (story:any, _args:any, { dataSources }) => {
-            return Promise.all(story.creators.map(creator => dataSources.marvelAPI.getCreatorById(creator.id)));
+            return (dataSources.marvelAPI as MarvelAPI).getCreatorsByStoryId(Object.assign({ id: story.id }, _args));
         }
     }
 };

@@ -1,31 +1,33 @@
+import { MarvelAPI } from '../datasources/MarvelAPI';
+
 export const resolver = {
     Query: {
         events: () => null,
         event: async (_source:any, { id }, { dataSources }) => {
-            return dataSources.marvelAPI.getEventById(id);
+            return (dataSources.marvelAPI as MarvelAPI).getEventById(id);
         }
     },
     Event: {
         comics: async (event:any, _args:any, { dataSources }) => {
-            return Promise.all(event.comics.map(comic => dataSources.marvelAPI.getComicById(comic.id)));
+            return (dataSources.marvelAPI as MarvelAPI).getComicsByEventId(Object.assign({ id: event.id }, _args));
         },
         characters: async (event:any, _args:any, { dataSources }) => {
-            return Promise.all(event.characters.map(character => dataSources.marvelAPI.getCharacterById(character.id)));
+            return (dataSources.marvelAPI as MarvelAPI).getCharactersByEventId(Object.assign({ id: event.id }, _args));
         },
         series: async (event:any, _args:any, { dataSources }) => {
-            return Promise.all(event.series.map(serie => dataSources.marvelAPI.getSerieById(serie.id)));
+            return (dataSources.marvelAPI as MarvelAPI).getSeriesByEventId(Object.assign({ id: event.id }, _args));
         },
         stories: async (event:any, _args:any, { dataSources }) => {
-            return Promise.all(event.stories.map(event => dataSources.marvelAPI.getStoryById(event.id)));
+            return (dataSources.marvelAPI as MarvelAPI).getStoriesByEventId(Object.assign({ id: event.id }, _args));
         },
         creators: async (event:any, _args:any, { dataSources }) => {
-            return Promise.all(event.creators.map(creator => dataSources.marvelAPI.getCreatorById(creator.id)));
+            return (dataSources.marvelAPI as MarvelAPI).getCreatorsByEventId(Object.assign({ id: event.id }, _args));
         },
         next: async (event:any, _args:any, { dataSources }) => {
-            return (event.next !== null) ? dataSources.marvelAPI.getEventById(event.next) : null;
+            return (event.next !== null) ? (dataSources.marvelAPI as MarvelAPI).getEventById(event.next) : null;
         },
         previous: async (event:any, _args:any, { dataSources }) => {
-            return (event.previous !== null) ? dataSources.marvelAPI.getEventById(event.previous) : null;
+            return (event.previous !== null) ? (dataSources.marvelAPI as MarvelAPI).getEventById(event.previous) : null;
         }
     }
 };

@@ -1,31 +1,33 @@
+import { MarvelAPI } from '../datasources/MarvelAPI';
+
 export const resolver = {
     Query: {
         series: () => null,
         serie: async (_source:any, { id }, { dataSources }) => {
-            return dataSources.marvelAPI.getSerieById(id);
+            return (dataSources.marvelAPI as MarvelAPI).getSerieById(id);
         }
     },
     Serie: {
         comics: async (serie:any, _args:any, { dataSources }) => {
-            return Promise.all(serie.comics.map(comic => dataSources.marvelAPI.getComicById(comic.id)));
+            return (dataSources.marvelAPI as MarvelAPI).getComicsBySerieId(Object.assign({ id: serie.id }, _args));
         },
         characters: async (serie:any, _args:any, { dataSources }) => {
-            return Promise.all(serie.characters.map(character => dataSources.marvelAPI.getCharacterById(character.id)));
+            return (dataSources.marvelAPI as MarvelAPI).getCharactersBySerieId(Object.assign({ id: serie.id }, _args));
         },
         events: async (serie:any, _args:any, { dataSources }) => {
-            return Promise.all(serie.events.map(event => dataSources.marvelAPI.getEventById(event.id)));
+            return (dataSources.marvelAPI as MarvelAPI).getEventsBySerieId(Object.assign({ id: serie.id }, _args));
         },
         creators: async (serie:any, _args:any, { dataSources }) => {
-            return Promise.all(serie.creators.map(creator => dataSources.marvelAPI.getCreatorById(creator.id)));
+            return (dataSources.marvelAPI as MarvelAPI).getCreatorsBySerieId(Object.assign({ id: serie.id }, _args));
         },
         stories: async (serie:any, _args:any, { dataSources }) => {
-            return Promise.all(serie.stories.map(story => dataSources.marvelAPI.getStoryById(story.id)));
+            return (dataSources.marvelAPI as MarvelAPI).getStoriesBySerieId(Object.assign({ id: serie.id }, _args));
         },
         next: async (serie:any, _args:any, { dataSources }) => {
-            return (serie.next !== null) ? dataSources.marvelAPI.getSerieById(serie.next) : null;
+            return (serie.next !== null) ? (dataSources.marvelAPI as MarvelAPI).getSerieById(serie.next) : null;
         },
         previous: async (serie:any, _args:any, { dataSources }) => {
-            return (serie.previous !== null) ? dataSources.marvelAPI.getSerieById(serie.previous) : null;
+            return (serie.previous !== null) ? (dataSources.marvelAPI as MarvelAPI).getSerieById(serie.previous) : null;
         }
     }
 };
