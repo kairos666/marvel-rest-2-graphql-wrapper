@@ -34,189 +34,30 @@ export class MarvelAPI extends RESTDataSource {
             const characterResp = resp.data.results[0] || false;
             if (!characterResp) return null;
 
-            // formating needed fields
-            let formattedCharacterFields = {};
-            
-            return Object.assign(characterResp, formattedCharacterFields);
+            return this.characterRespFormatterFunc(characterResp);
         });
     }
 
     async getComicsByCharacterId(params:FindComicsByItemParams) {
-        const resourceListFunc:Function = this.getResourcesByParentResourceFunc('comics', 'character', 'characters', itemResp => {
-            // formating needed fields
-            let formattedItemFields = {
-                images: get(itemResp, 'images', []),
-                characters: get(itemResp, 'characters.items', []).map(({ resourceURI, name }) => {
-                    return {
-                        id: getIdFromResourceURI(resourceURI),
-                        name: name
-                    }
-                }),
-                stories: get(itemResp, 'stories.items', []).map(({ resourceURI, name }) => {
-                    return {
-                        id: getIdFromResourceURI(resourceURI),
-                        title: name
-                    }
-                }),
-                series: get(itemResp, 'series.items', []).map(({ resourceURI, name }) => {
-                    return {
-                        id: getIdFromResourceURI(resourceURI),
-                        name: name
-                    }
-                }),
-                events: get(itemResp, 'events.items', []).map(({ resourceURI, name }) => {
-                    return {
-                        id: getIdFromResourceURI(resourceURI),
-                        name: name
-                    }
-                }),
-                creators: get(itemResp, 'creators.items', []).map(({ resourceURI, name, role }) => {
-                    return {
-                        id: getIdFromResourceURI(resourceURI),
-                        name: name,
-                        role: role
-                    }
-                })
-            };
-            
-            return Object.assign(itemResp, formattedItemFields);
-        }, { orderBy: 'title' });
+        const resourceListFunc:Function = this.getResourcesByParentResourceFunc('comics', 'character', 'characters', this.comicRespFormatterFunc, { orderBy: 'title' });
 
         return resourceListFunc(params);
     }
 
     async getStoriesByCharacterId(params:FindStoriesByItemParams) {
-        const resourceListFunc:Function = this.getResourcesByParentResourceFunc('stories', 'character', 'characters', itemResp => {
-            // formating needed fields
-            let formattedItemFields = {
-                characters: get(itemResp, 'characters.items', []).map(({ resourceURI, name }) => {
-                    return {
-                        id: getIdFromResourceURI(resourceURI),
-                        name: name
-                    }
-                }),
-                comics: get(itemResp, 'comics.items', []).map(({ resourceURI, name }) => {
-                    return {
-                        id: getIdFromResourceURI(resourceURI),
-                        title: name
-                    }
-                }),
-                series: get(itemResp, 'series.items', []).map(({ resourceURI, name }) => {
-                    return {
-                        id: getIdFromResourceURI(resourceURI),
-                        name: name
-                    }
-                }),
-                events: get(itemResp, 'events.items', []).map(({ resourceURI, name }) => {
-                    return {
-                        id: getIdFromResourceURI(resourceURI),
-                        name: name
-                    }
-                }),
-                creators: get(itemResp, 'creators.items', []).map(({ resourceURI, name, role }) => {
-                    return {
-                        id: getIdFromResourceURI(resourceURI),
-                        name: name,
-                        role: role
-                    }
-                }),
-                originalIssue: (get(itemResp, 'originalIssue.resourceURI', false)) ? getIdFromResourceURI(itemResp.originalIssue.resourceURI) : null
-            };
-            
-            return Object.assign(itemResp, formattedItemFields);
-        });
+        const resourceListFunc:Function = this.getResourcesByParentResourceFunc('stories', 'character', 'characters', this.storyRespFormatterFunc);
 
         return resourceListFunc(params);
     }
     
     async getEventsByCharacterId(params:FindEventsByItemParams) {
-        const resourceListFunc:Function = this.getResourcesByParentResourceFunc('events', 'character', 'characters', itemResp => {
-            // formating needed fields
-            let formattedItemFields = {
-                characters: get(itemResp, 'characters.items', []).map(({ resourceURI, name, role }) => {
-                    return {
-                        id: getIdFromResourceURI(resourceURI),
-                        name: name,
-                        role: role
-                    }
-                }),
-                comics: get(itemResp, 'comics.items', []).map(({ resourceURI, name }) => {
-                    return {
-                        id: getIdFromResourceURI(resourceURI),
-                        title: name
-                    }
-                }),
-                series: get(itemResp, 'series.items', []).map(({ resourceURI, name }) => {
-                    return {
-                        id: getIdFromResourceURI(resourceURI),
-                        name: name
-                    }
-                }),
-                stories: get(itemResp, 'stories.items', []).map(({ resourceURI, name, type }) => {
-                    return {
-                        id: getIdFromResourceURI(resourceURI),
-                        title: name,
-                        type: type
-                    }
-                }),
-                creators: get(itemResp, 'creators.items', []).map(({ resourceURI, name, role }) => {
-                    return {
-                        id: getIdFromResourceURI(resourceURI),
-                        name: name,
-                        role: role
-                    }
-                }),
-                next: (get(itemResp, 'next.resourceURI', false)) ? getIdFromResourceURI(itemResp.next.resourceURI) : null,
-                previous: (get(itemResp, 'previous.resourceURI', false)) ? getIdFromResourceURI(itemResp.previous.resourceURI) : null
-            };
-            
-            return Object.assign(itemResp, formattedItemFields);
-        }, { orderBy: 'name' });
+        const resourceListFunc:Function = this.getResourcesByParentResourceFunc('events', 'character', 'characters', this.eventRespFormatterFunc, { orderBy: 'name' });
 
         return resourceListFunc(params);
     }
 
     async getSeriesByCharacterId(params:FindSeriesByItemParams) {
-        const resourceListFunc:Function = this.getResourcesByParentResourceFunc('series', 'character', 'characters', itemResp => {
-            // formating needed fields
-            let formattedItemFields = {
-                characters: get(itemResp, 'characters.items', []).map(({ resourceURI, name }) => {
-                    return {
-                        id: getIdFromResourceURI(resourceURI),
-                        name: name
-                    }
-                }),
-                comics: get(itemResp, 'comics.items', []).map(({ resourceURI, name }) => {
-                    return {
-                        id: getIdFromResourceURI(resourceURI),
-                        title: name
-                    }
-                }),
-                events: get(itemResp, 'events.items', []).map(({ resourceURI, name }) => {
-                    return {
-                        id: getIdFromResourceURI(resourceURI),
-                        name: name
-                    }
-                }),
-                stories: get(itemResp, 'stories.items', []).map(({ resourceURI, name }) => {
-                    return {
-                        id: getIdFromResourceURI(resourceURI),
-                        title: name
-                    }
-                }),
-                creators: get(itemResp, 'creators.items', []).map(({ resourceURI, name, role }) => {
-                    return {
-                        id: getIdFromResourceURI(resourceURI),
-                        name: name,
-                        role: role
-                    }
-                }),
-                next: (get(itemResp, 'next.resourceURI', false)) ? getIdFromResourceURI(itemResp.next.resourceURI) : null,
-                previous: (get(itemResp, 'previous.resourceURI', false)) ? getIdFromResourceURI(itemResp.previous.resourceURI) : null
-            };
-            
-            return Object.assign(itemResp, formattedItemFields);
-        }, { orderBy: 'title' });
+        const resourceListFunc:Function = this.getResourcesByParentResourceFunc('series', 'character', 'characters', this.serieRespFormatterFunc, { orderBy: 'title' });
 
         return resourceListFunc(params);
     }
@@ -231,45 +72,38 @@ export class MarvelAPI extends RESTDataSource {
             const comicResp = resp.data.results[0] || false;
             if (!comicResp) return null;
 
-            // formating needed fields
-            let formattedComicFields = {
-                id: comicResp.id.toString(),
-                images: get(comicResp, 'images', []),
-                characters: get(comicResp, 'characters.items', []).map(({ resourceURI, name }) => {
-                    return {
-                        id: getIdFromResourceURI(resourceURI),
-                        name: name
-                    }
-                }),
-                stories: get(comicResp, 'stories.items', []).map(({ resourceURI, name }) => {
-                    return {
-                        id: getIdFromResourceURI(resourceURI),
-                        title: name
-                    }
-                }),
-                series: get(comicResp, 'series.items', []).map(({ resourceURI, name }) => {
-                    return {
-                        id: getIdFromResourceURI(resourceURI),
-                        name: name
-                    }
-                }),
-                events: get(comicResp, 'events.items', []).map(({ resourceURI, name }) => {
-                    return {
-                        id: getIdFromResourceURI(resourceURI),
-                        name: name
-                    }
-                }),
-                creators: get(comicResp, 'creators.items', []).map(({ resourceURI, name, role }) => {
-                    return {
-                        id: getIdFromResourceURI(resourceURI),
-                        name: name,
-                        role: role
-                    }
-                })
-            };
-            
-            return Object.assign(comicResp, formattedComicFields);
+            return this.comicRespFormatterFunc(comicResp);
         });
+    }
+
+    async getCharactersByComicId(params:FindCharactersByItemParams) {
+        const resourceListFunc:Function = this.getResourcesByParentResourceFunc('characters', 'comic', 'comics', this.characterRespFormatterFunc, { orderBy: 'name' });
+
+        return resourceListFunc(params);
+    }
+
+    async getCreatorsByComicId(params:FindCreatorsByItemParams) {
+        const resourceListFunc:Function = this.getResourcesByParentResourceFunc('creators', 'comic', 'comics', this.creatorRespFormatterFunc);
+
+        return resourceListFunc(params);
+    }
+
+    async getStoriesByComicId(params:FindStoriesByItemParams) {
+        const resourceListFunc:Function = this.getResourcesByParentResourceFunc('stories', 'comic', 'comics', this.storyRespFormatterFunc);
+
+        return resourceListFunc(params);
+    }
+
+    async getEventsByComicId(params:FindEventsByItemParams) {
+        const resourceListFunc:Function = this.getResourcesByParentResourceFunc('events', 'comic', 'comics', this.eventRespFormatterFunc, { orderBy: 'name' });
+
+        return resourceListFunc(params);
+    }
+
+    async getSeriesByComicId(params:FindSeriesByItemParams) {
+        const resourceListFunc:Function = this.getResourcesByParentResourceFunc('series', 'comic', 'comics', this.serieRespFormatterFunc, { orderBy: 'title' });
+
+        return resourceListFunc(params);
     }
 
     // Stories
@@ -282,45 +116,38 @@ export class MarvelAPI extends RESTDataSource {
             const storyResp = resp.data.results[0] || false;
             if (!storyResp) return null;
 
-            // formating needed fields
-            let formattedStoryFields = {
-                id: storyResp.id.toString(),
-                characters: get(storyResp, 'characters.items', []).map(({ resourceURI, name }) => {
-                    return {
-                        id: getIdFromResourceURI(resourceURI),
-                        name: name
-                    }
-                }),
-                comics: get(storyResp, 'comics.items', []).map(({ resourceURI, name }) => {
-                    return {
-                        id: getIdFromResourceURI(resourceURI),
-                        title: name
-                    }
-                }),
-                series: get(storyResp, 'series.items', []).map(({ resourceURI, name }) => {
-                    return {
-                        id: getIdFromResourceURI(resourceURI),
-                        name: name
-                    }
-                }),
-                events: get(storyResp, 'events.items', []).map(({ resourceURI, name }) => {
-                    return {
-                        id: getIdFromResourceURI(resourceURI),
-                        name: name
-                    }
-                }),
-                creators: get(storyResp, 'creators.items', []).map(({ resourceURI, name, role }) => {
-                    return {
-                        id: getIdFromResourceURI(resourceURI),
-                        name: name,
-                        role: role
-                    }
-                }),
-                originalIssue: (get(storyResp, 'originalIssue.resourceURI', false)) ? getIdFromResourceURI(storyResp.originalIssue.resourceURI) : null
-            };
-            
-            return Object.assign(storyResp, formattedStoryFields);
+            return this.storyRespFormatterFunc(storyResp);
         });
+    }
+
+    async getCharactersByStoryId(params:FindCharactersByItemParams) {
+        const resourceListFunc:Function = this.getResourcesByParentResourceFunc('characters', 'story', 'stories', this.characterRespFormatterFunc, { orderBy: 'name' });
+
+        return resourceListFunc(params);
+    }
+
+    async getCreatorsByStoryId(params:FindCreatorsByItemParams) {
+        const resourceListFunc:Function = this.getResourcesByParentResourceFunc('creators', 'story', 'stories', this.creatorRespFormatterFunc);
+
+        return resourceListFunc(params);
+    }
+
+    async getEventsByStoryId(params:FindEventsByItemParams) {
+        const resourceListFunc:Function = this.getResourcesByParentResourceFunc('events', 'story', 'stories', this.eventRespFormatterFunc, { orderBy: 'name' });
+
+        return resourceListFunc(params);
+    }
+
+    async getSeriesByStoryId(params:FindSeriesByItemParams) {
+        const resourceListFunc:Function = this.getResourcesByParentResourceFunc('series', 'story', 'stories', this.serieRespFormatterFunc, { orderBy: 'title' });
+
+        return resourceListFunc(params);
+    }
+
+    async getComicsByStoryId(params:FindComicsByItemParams) {
+        const resourceListFunc:Function = this.getResourcesByParentResourceFunc('comics', 'story', 'stories', this.comicRespFormatterFunc, { orderBy: 'title' });
+
+        return resourceListFunc(params);
     }
 
     // Series
@@ -333,46 +160,38 @@ export class MarvelAPI extends RESTDataSource {
             const serieResp = resp.data.results[0] || false;
             if (!serieResp) return null;
 
-            // formating needed fields
-            let formattedSerieFields = {
-                id: serieResp.id.toString(),
-                characters: get(serieResp, 'characters.items', []).map(({ resourceURI, name }) => {
-                    return {
-                        id: getIdFromResourceURI(resourceURI),
-                        name: name
-                    }
-                }),
-                comics: get(serieResp, 'comics.items', []).map(({ resourceURI, name }) => {
-                    return {
-                        id: getIdFromResourceURI(resourceURI),
-                        title: name
-                    }
-                }),
-                events: get(serieResp, 'events.items', []).map(({ resourceURI, name }) => {
-                    return {
-                        id: getIdFromResourceURI(resourceURI),
-                        name: name
-                    }
-                }),
-                stories: get(serieResp, 'stories.items', []).map(({ resourceURI, name }) => {
-                    return {
-                        id: getIdFromResourceURI(resourceURI),
-                        title: name
-                    }
-                }),
-                creators: get(serieResp, 'creators.items', []).map(({ resourceURI, name, role }) => {
-                    return {
-                        id: getIdFromResourceURI(resourceURI),
-                        name: name,
-                        role: role
-                    }
-                }),
-                next: (get(serieResp, 'next.resourceURI', false)) ? getIdFromResourceURI(serieResp.next.resourceURI) : null,
-                previous: (get(serieResp, 'previous.resourceURI', false)) ? getIdFromResourceURI(serieResp.previous.resourceURI) : null
-            };
-            
-            return Object.assign(serieResp, formattedSerieFields);
+            return this.serieRespFormatterFunc(serieResp);
         });
+    }
+
+    async getCharactersBySerieId(params:FindCharactersByItemParams) {
+        const resourceListFunc:Function = this.getResourcesByParentResourceFunc('characters', 'serie', 'series', this.characterRespFormatterFunc, { orderBy: 'name' });
+
+        return resourceListFunc(params);
+    }
+
+    async getCreatorsBySerieId(params:FindCreatorsByItemParams) {
+        const resourceListFunc:Function = this.getResourcesByParentResourceFunc('creators', 'serie', 'series', this.creatorRespFormatterFunc);
+
+        return resourceListFunc(params);
+    }
+
+    async getStoriesBySerieId(params:FindStoriesByItemParams) {
+        const resourceListFunc:Function = this.getResourcesByParentResourceFunc('stories', 'serie', 'series', this.storyRespFormatterFunc);
+
+        return resourceListFunc(params);
+    }
+
+    async getEventsBySerieId(params:FindEventsByItemParams) {
+        const resourceListFunc:Function = this.getResourcesByParentResourceFunc('events', 'serie', 'series', this.eventRespFormatterFunc, { orderBy: 'name' });
+
+        return resourceListFunc(params);
+    }
+
+    async getComicsBySerieId(params:FindComicsByItemParams) {
+        const resourceListFunc:Function = this.getResourcesByParentResourceFunc('comics', 'serie', 'series', this.comicRespFormatterFunc, { orderBy: 'title' });
+
+        return resourceListFunc(params);
     }
 
     // Events
@@ -385,48 +204,38 @@ export class MarvelAPI extends RESTDataSource {
             const eventResp = resp.data.results[0] || false;
             if (!eventResp) return null;
 
-            // formating needed fields
-            let formattedEventFields = {
-                id: eventResp.id.toString(),
-                characters: get(eventResp, 'characters.items', []).map(({ resourceURI, name, role }) => {
-                    return {
-                        id: getIdFromResourceURI(resourceURI),
-                        name: name,
-                        role: role
-                    }
-                }),
-                comics: get(eventResp, 'comics.items', []).map(({ resourceURI, name }) => {
-                    return {
-                        id: getIdFromResourceURI(resourceURI),
-                        title: name
-                    }
-                }),
-                series: get(eventResp, 'series.items', []).map(({ resourceURI, name }) => {
-                    return {
-                        id: getIdFromResourceURI(resourceURI),
-                        name: name
-                    }
-                }),
-                stories: get(eventResp, 'stories.items', []).map(({ resourceURI, name, type }) => {
-                    return {
-                        id: getIdFromResourceURI(resourceURI),
-                        title: name,
-                        type: type
-                    }
-                }),
-                creators: get(eventResp, 'creators.items', []).map(({ resourceURI, name, role }) => {
-                    return {
-                        id: getIdFromResourceURI(resourceURI),
-                        name: name,
-                        role: role
-                    }
-                }),
-                next: (get(eventResp, 'next.resourceURI', false)) ? getIdFromResourceURI(eventResp.next.resourceURI) : null,
-                previous: (get(eventResp, 'previous.resourceURI', false)) ? getIdFromResourceURI(eventResp.previous.resourceURI) : null
-            };
-            
-            return Object.assign(eventResp, formattedEventFields);
+            return this.eventRespFormatterFunc(eventResp);
         });
+    }
+
+    async getCharactersByEventId(params:FindCharactersByItemParams) {
+        const resourceListFunc:Function = this.getResourcesByParentResourceFunc('characters', 'event', 'events', this.characterRespFormatterFunc, { orderBy: 'name' });
+
+        return resourceListFunc(params);
+    }
+
+    async getCreatorsByEventId(params:FindCreatorsByItemParams) {
+        const resourceListFunc:Function = this.getResourcesByParentResourceFunc('creators', 'event', 'events', this.creatorRespFormatterFunc);
+
+        return resourceListFunc(params);
+    }
+
+    async getStoriesByEventId(params:FindStoriesByItemParams) {
+        const resourceListFunc:Function = this.getResourcesByParentResourceFunc('stories', 'event', 'events', this.storyRespFormatterFunc);
+
+        return resourceListFunc(params);
+    }
+
+    async getSeriesByEventId(params:FindSeriesByItemParams) {
+        const resourceListFunc:Function = this.getResourcesByParentResourceFunc('series', 'event', 'events', this.serieRespFormatterFunc, { orderBy: 'title' });
+
+        return resourceListFunc(params);
+    }
+
+    async getComicsByEventId(params:FindComicsByItemParams) {
+        const resourceListFunc:Function = this.getResourcesByParentResourceFunc('comics', 'event', 'events', this.comicRespFormatterFunc, { orderBy: 'title' });
+
+        return resourceListFunc(params);
     }
 
     // Creators
@@ -439,40 +248,81 @@ export class MarvelAPI extends RESTDataSource {
             const creatorResp = resp.data.results[0] || false;
             if (!creatorResp) return null;
 
-            // formating needed fields
-            let formattedCreatorFields = {
-                id: creatorResp.id.toString(),
-                comics: get(creatorResp, 'comics.items', []).map(({ resourceURI, name }) => {
-                    return {
-                        id: getIdFromResourceURI(resourceURI),
-                        title: name
-                    }
-                }),
-                series: get(creatorResp, 'series.items', []).map(({ resourceURI, name }) => {
-                    return {
-                        id: getIdFromResourceURI(resourceURI),
-                        name: name
-                    }
-                }),
-                stories: get(creatorResp, 'stories.items', []).map(({ resourceURI, name, type }) => {
-                    return {
-                        id: getIdFromResourceURI(resourceURI),
-                        title: name,
-                        type: type
-                    }
-                }),
-                events: get(creatorResp, 'events.items', []).map(({ resourceURI, name }) => {
-                    return {
-                        id: getIdFromResourceURI(resourceURI),
-                        name: name
-                    }
-                })
-            };
-            
-            return Object.assign(creatorResp, formattedCreatorFields);
+            return this.creatorRespFormatterFunc(creatorResp);
         });
     }
 
+    async getStoriesByCreatorId(params:FindStoriesByItemParams) {
+        const resourceListFunc:Function = this.getResourcesByParentResourceFunc('stories', 'creator', 'creators', this.storyRespFormatterFunc);
+
+        return resourceListFunc(params);
+    }
+
+    async getEventsByCreatorId(params:FindEventsByItemParams) {
+        const resourceListFunc:Function = this.getResourcesByParentResourceFunc('events', 'creator', 'creators', this.eventRespFormatterFunc, { orderBy: 'name' });
+
+        return resourceListFunc(params);
+    }
+
+    async getSeriesByCreatorId(params:FindSeriesByItemParams) {
+        const resourceListFunc:Function = this.getResourcesByParentResourceFunc('series', 'creator', 'creators', this.serieRespFormatterFunc, { orderBy: 'title' });
+
+        return resourceListFunc(params);
+    }
+
+    async getComicsByCreatorId(params:FindComicsByItemParams) {
+        const resourceListFunc:Function = this.getResourcesByParentResourceFunc('comics', 'creator', 'creators', this.comicRespFormatterFunc, { orderBy: 'title' });
+
+        return resourceListFunc(params);
+    }
+
+    // generic helper functions
+    private characterRespFormatterFunc = itemResp => {
+        // formating needed fields
+        let formattedItemFields = {};
+        
+        return Object.assign(itemResp, formattedItemFields);
+    };
+    private comicRespFormatterFunc = itemResp => {
+        // formating needed fields
+        let formattedItemFields = {
+            images: get(itemResp, 'images', [])
+        };
+        
+        return Object.assign(itemResp, formattedItemFields);
+    };
+    private serieRespFormatterFunc = itemResp => {
+        // formating needed fields
+        let formattedItemFields = {
+            next: (get(itemResp, 'next.resourceURI', false)) ? getIdFromResourceURI(itemResp.next.resourceURI) : null,
+            previous: (get(itemResp, 'previous.resourceURI', false)) ? getIdFromResourceURI(itemResp.previous.resourceURI) : null
+        };
+        
+        return Object.assign(itemResp, formattedItemFields);
+    };
+    private eventRespFormatterFunc = itemResp => {
+        // formating needed fields
+        let formattedItemFields = {
+            next: (get(itemResp, 'next.resourceURI', false)) ? getIdFromResourceURI(itemResp.next.resourceURI) : null,
+            previous: (get(itemResp, 'previous.resourceURI', false)) ? getIdFromResourceURI(itemResp.previous.resourceURI) : null
+        };
+        
+        return Object.assign(itemResp, formattedItemFields);
+    };
+    private storyRespFormatterFunc = itemResp => {
+        // formating needed fields
+        let formattedItemFields = {
+            originalIssue: (get(itemResp, 'originalIssue.resourceURI', false)) ? getIdFromResourceURI(itemResp.originalIssue.resourceURI) : null
+        };
+        
+        return Object.assign(itemResp, formattedItemFields);
+    };
+    private creatorRespFormatterFunc = itemResp => {
+        // formating needed fields
+        let formattedItemFields = {};
+        
+        return Object.assign(itemResp, formattedItemFields);
+    };
     // private queryResources(
     //     resourceNamePlural:String,
     //     respFormatter:Function,
