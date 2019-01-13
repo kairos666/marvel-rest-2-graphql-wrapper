@@ -592,6 +592,55 @@ interface FindComicsParams extends ISearch {
     collaborators?: string
 }
 
+interface FindCreatorsParams extends ISearch {
+    firstName: String;
+    middleName: String;
+    lastName: String;
+    suffix: String;
+    nameStartWith: String;
+    firstNameStartWith: String;
+    middleNameStartWith: String;
+    lastNameStartWith: String;
+    modifiedSince: Date;
+    comics: Number;
+    series: Number;
+    events: Number;
+    stories: Number;
+}
+
+interface FindEventsParams extends ISearch {
+    name: String;
+    nameStartWith: String;
+    modifiedSince: Date;
+    creators: Number;
+    characters: Number;
+    comics: Number;
+    series: Number;
+    stories: Number;
+}
+
+interface FindSeriesParams extends ISearch {
+    title: String;
+    titleStartsWith: String;
+    startYear: Number;
+    modifiedSince: Date;
+    creators: Number;
+    characters: Number;
+    comics: Number;
+    events: Number;
+    stories: Number;
+    seriesType: 'collection'|'one shot'|'limited'|'ongoing';
+}
+
+interface FindStoriesParams extends ISearch {
+    modifiedSince: Date;
+    creators: Number;
+    characters: Number;
+    comics: Number;
+    events: Number;
+    series: Number;
+}
+
 /**
  * RELATED TO RESOURCE SEARCH PARAMS
  */
@@ -600,17 +649,17 @@ interface FindComicsByItemParams extends FindComicsParams {
     id: Number;
 }
 
-interface FindStoriesByItemParams extends ISearch {
+interface FindStoriesByItemParams extends FindStoriesParams {
     /** The related resource id */
     id: Number;
 }
 
-interface FindEventsByItemParams extends ISearch {
+interface FindEventsByItemParams extends FindEventsParams {
     /** The related resource id */
     id: Number;
 }
 
-interface FindSeriesByItemParams extends ISearch {
+interface FindSeriesByItemParams extends FindSeriesParams {
     /** The related resource id */
     id: Number;
 }
@@ -620,7 +669,7 @@ interface FindCharactersByItemParams extends FindCharactersParams {
     id: Number;
 }
 
-interface FindCreatorsByItemParams extends ISearch {
+interface FindCreatorsByItemParams extends FindCreatorsParams {
     /** The related resource id */
     id: Number;
 }
