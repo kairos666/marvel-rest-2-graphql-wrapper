@@ -16,16 +16,16 @@ export const typeDef = `
         type: String
         "The representative image for this story."
         thumbnail: Image
-        "A resource list containing comics in which this story takes place."
-        comics: [Comic]!
-        "A resource list containing series in which this story appears."
-        series:	[Serie]!
-        "A resource list of the events in which this story appears."
-        events: [Event]!
-        "A resource list of characters which appear in this story."
-        characters: [Character]!
-        "A resource list of creators who worked on this story."
-        creators: [Creator]!
+        "character list related to this story"
+        characters(limit: Int, offset: Int, orderBy: String): CharacterList!
+        "creator list related to this story"
+        creators(limit: Int, offset: Int, orderBy: String): CreatorList!
+        "comic list related to this story"
+        comics(limit: Int, offset: Int, orderBy: String): ComicList!
+        "event list related to this story"
+        events(limit: Int, offset: Int, orderBy: String): EventList!
+        "serie list related to this story"
+        series(limit: Int, offset: Int, orderBy: String): SerieList!
         "Comic in which this story was originally published."
         originalIssue: Comic
     }

@@ -100,12 +100,6 @@ export class MarvelAPI extends RESTDataSource {
         return resourceListFunc(params);
     }
 
-    async getSeriesByComicId(params:FindSeriesByItemParams) {
-        const resourceListFunc:Function = this.getResourcesByParentResourceFunc('series', 'comic', 'comics', this.serieRespFormatterFunc, { orderBy: 'title' });
-
-        return resourceListFunc(params);
-    }
-
     // Stories
     async findStories(params:FindCharactersParams) {
         return params;

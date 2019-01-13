@@ -19,16 +19,16 @@ export const typeDef = `
         rating: String
         "The representative image for this series."
         thumbnail: Image
-        "A resource list containing comics in this series."
-        comics: [Comic]!
-        "A resource list containing stories which occur in comics in this series."
-        stories: [Story]!
-        "A resource list containing events which take place in comics in this series."
-        events: [Event]!
-        "A resource list containing characters which appear in comics in this series."
-        characters: [Character]!
-        "A resource list of creators whose work appears in comics in this series."
-        creators: [Creator]!
+        "character list related to this serie"
+        characters(limit: Int, offset: Int, orderBy: String): CharacterList!
+        "creator list related to this serie"
+        creators(limit: Int, offset: Int, orderBy: String): CreatorList!
+        "comic list related to this serie"
+        comics(limit: Int, offset: Int, orderBy: String): ComicList!
+        "story list related to this serie"
+        stories(limit: Int, offset: Int, orderBy: String): StoryList!
+        "event list related to this serie"
+        events(limit: Int, offset: Int, orderBy: String): EventList!
         "serie which follows this serie."
         next: Serie
         "serie which preceded this serie."

@@ -17,16 +17,16 @@ export const typeDef = `
         end: String
         "The representative image for this event."
         thumbnail: Image
-        "A resource list containing the comics in this event."
-        comics: [Comic]!
-        "A resource list containing the stories in this event."
-        stories: [Story]!
-        "A resource list containing the series in this event."
-        series: [Serie]!
-        "A resource list containing the characters in this event."
-        characters: [Character]!
-        "A resource list containing the creators in this event."
-        creators: [Creator]!
+        "character list related to this event"
+        characters(limit: Int, offset: Int, orderBy: String): CharacterList!
+        "creator list related to this event"
+        creators(limit: Int, offset: Int, orderBy: String): CreatorList!
+        "comic list related to this event"
+        comics(limit: Int, offset: Int, orderBy: String): ComicList!
+        "story list related to this event"
+        stories(limit: Int, offset: Int, orderBy: String): StoryList!
+        "serie list related to this event"
+        series(limit: Int, offset: Int, orderBy: String): SerieList!
         "event which follows this event."
         next: Event
         "event which preceded this event."

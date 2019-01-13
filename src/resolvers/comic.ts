@@ -17,9 +17,6 @@ export const resolver = {
         events: async (comic:any, _args:any, { dataSources }) => {
             return (dataSources.marvelAPI as MarvelAPI).getEventsByComicId(Object.assign({ id: comic.id }, _args));
         },
-        series: async (comic:any, _args:any, { dataSources }) => {
-            return (dataSources.marvelAPI as MarvelAPI).getSeriesByComicId(Object.assign({ id: comic.id }, _args));
-        },
         creators: async (comic:any, _args:any, { dataSources }) => {
             return (dataSources.marvelAPI as MarvelAPI).getCreatorsByComicId(Object.assign({ id: comic.id }, _args));
         }

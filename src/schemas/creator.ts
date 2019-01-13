@@ -20,14 +20,14 @@ export const typeDef = `
         fullName: String
         "The representative image for this creator."
         thumbnail: Image
-        "A resource list containing the comics which feature work by this creator."
-        comics: [Comic]!
-        "A resource list containing the stories which feature work by this creator."
-        stories: [Story]!
-        "A resource list containing the series which feature work by this creator."
-        series: [Serie]!
-        "A resource list containing the events which feature work by this creator."
-        events: [Event]!
+        "comic list related to this creator"
+        comics(limit: Int, offset: Int, orderBy: String): ComicList!
+        "story list related to this creator"
+        stories(limit: Int, offset: Int, orderBy: String): StoryList!
+        "event list related to this creator"
+        events(limit: Int, offset: Int, orderBy: String): EventList!
+        "serie list related to this creator"
+        series(limit: Int, offset: Int, orderBy: String): SerieList!
     }
 
     """
