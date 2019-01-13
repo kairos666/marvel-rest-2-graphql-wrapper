@@ -2,7 +2,9 @@ import { MarvelAPI } from '../datasources/MarvelAPI';
 
 export const resolver = {
     Query: {
-        stories: () => null,
+        stories: async (_source:any, _args:any, { dataSources }) => {
+            return (dataSources.marvelAPI as MarvelAPI).findStories(_args);
+        },
         story: async (_source:any, { id }, { dataSources }) => {
             return (dataSources.marvelAPI as MarvelAPI).getStoryById(id);
         }

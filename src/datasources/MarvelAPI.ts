@@ -26,7 +26,9 @@ export class MarvelAPI extends RESTDataSource {
 
     // CHARACTER RESOURCE REST ENDPOINTS HANDLERS
     async findCharacters(params:FindCharactersParams) {
-        return params;
+        const resourceListFunc:Function = this.queryResources('characters', this.characterRespFormatterFunc, { orderBy: 'name' });
+
+        return resourceListFunc(params);
     }
 
     async getCharacterById(id: Number) {
@@ -64,7 +66,9 @@ export class MarvelAPI extends RESTDataSource {
 
     // Comics
     async findComics(params:FindComicsParams) {
-        return params;
+        const resourceListFunc:Function = this.queryResources('comics', this.comicRespFormatterFunc, { orderBy: 'title' });
+
+        return resourceListFunc(params);
     }
 
     async getComicById(id: Number) {
@@ -102,7 +106,9 @@ export class MarvelAPI extends RESTDataSource {
 
     // Stories
     async findStories(params:FindCharactersParams) {
-        return params;
+        const resourceListFunc:Function = this.queryResources('stories', this.storyRespFormatterFunc);
+
+        return resourceListFunc(params);
     }
 
     async getStoryById(id: Number) {
@@ -146,7 +152,9 @@ export class MarvelAPI extends RESTDataSource {
 
     // Series
     async findSeries(params:any) {
-        return params;
+        const resourceListFunc:Function = this.queryResources('series', this.serieRespFormatterFunc, { orderBy: 'title' });
+
+        return resourceListFunc(params);
     }
 
     async getSerieById(id: Number) {
@@ -190,7 +198,9 @@ export class MarvelAPI extends RESTDataSource {
 
     // Events
     async findEvents(params:any) {
-        return params;
+        const resourceListFunc:Function = this.queryResources('events', this.eventRespFormatterFunc, { orderBy: 'name' });
+
+        return resourceListFunc(params);
     }
 
     async getEventById(id: Number) {
@@ -234,7 +244,9 @@ export class MarvelAPI extends RESTDataSource {
 
     // Creators
     async findCreators(params:any) {
-        return params;
+        const resourceListFunc:Function = this.queryResources('creators', this.creatorRespFormatterFunc);
+
+        return resourceListFunc(params);
     }
 
     async getCreatorById(id: Number) {
@@ -317,13 +329,39 @@ export class MarvelAPI extends RESTDataSource {
         
         return Object.assign(itemResp, formattedItemFields);
     };
-    // private queryResources(
-    //     resourceNamePlural:String,
-    //     respFormatter:Function,
-    //     defaultParams:any = {}
-    // ):Function {
-    //     return () => {}
-    // }
+
+    private queryResources(
+        resourceNamePlural:String,
+        respFormatter:Function,
+        defaultParams:any = {}
+    ):Function {
+        return (params:FindCharactersParams|FindComicsParams|FindCreatorsParams|FindEventsParams|FindSeriesParams|FindStoriesParams) => {
+            // format params
+            let _params:FindCharactersParams|FindComicsParams|FindCreatorsParams|FindEventsParams|FindSeriesParams|FindStoriesParams = Object.assign({}, defaultParams, params);
+            _params = constrainSearchLimit(_params);
+            const queryParams = Object.keys(_params)
+                .filter(param => (param !== 'id'))
+                .map((param, index) => `${(index === 0) ? '?' : '&'}${param}=${_params[param]}`)
+                .join('');
+
+            // make call
+            return this.get(`${resourceNamePlural}${queryParams}`).then(resp => {
+                const itemsResp = resp.data.results || false;
+                if (!itemsResp) return {
+                    offset: 0,
+                    limit: 20,
+                    total: 0,
+                    count: 0,
+                    results: []
+                };
+
+                let formattedItemsResp = itemsResp.map(respFormatter);
+
+                // return full response
+                return Object.assign(resp.data, { results: formattedItemsResp });
+            });
+        }
+    }
 
     private getResourcesByParentResourceFunc(
         resourceNamePlural:String,

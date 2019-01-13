@@ -2,7 +2,9 @@ import { MarvelAPI } from '../datasources/MarvelAPI';
 
 export const resolver = {
     Query: {
-        creators: () => null,
+        creators: async (_source:any, _args:any, { dataSources }) => {
+            return (dataSources.marvelAPI as MarvelAPI).findCreators(_args);
+        },
         creator: async (_source:any, { id }, { dataSources }) => {
             return (dataSources.marvelAPI as MarvelAPI).getCreatorById(id);
         }

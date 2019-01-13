@@ -2,7 +2,9 @@ import { MarvelAPI } from '../datasources/MarvelAPI';
 
 export const resolver = {
     Query: {
-        events: () => null,
+        events: async (_source:any, _args:any, { dataSources }) => {
+            return (dataSources.marvelAPI as MarvelAPI).findEvents(_args);
+        },
         event: async (_source:any, { id }, { dataSources }) => {
             return (dataSources.marvelAPI as MarvelAPI).getEventById(id);
         }

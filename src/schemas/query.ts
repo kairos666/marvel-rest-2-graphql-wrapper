@@ -6,11 +6,11 @@ export const typeDef = `
         serie(id: ID!): Serie
         event(id: ID!): Event
         creator(id: ID!): Creator
-        characters: [Character]
-        comics: [Comic]
-        stories: [Story]
-        series: [Serie]
-        events: [Event]
-        creators: [Creator]
+        characters: CharacterList!
+        comics: ComicList!
+        stories: StoryList!
+        series: SerieList!
+        events: EventList!
+        creators: CreatorList!
     }
 `;
