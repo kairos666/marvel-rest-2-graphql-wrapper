@@ -1,5 +1,5 @@
 import { RESTDataSource, RequestOptions } from 'apollo-datasource-rest';
-import { ApolloError } from 'apollo-server';
+import { ApolloError, UserInputError } from 'apollo-server';
 import * as config from '../marvel.config.json';
 import crypto from 'crypto';
 import { getIdFromResourceURI, constrainSearchLimit } from '../utils';
@@ -37,7 +37,7 @@ export class MarvelAPI extends RESTDataSource {
             if (!characterResp) return null;
 
             return this.characterRespFormatterFunc(characterResp);
-        });
+        }).catch(this.marvelErrorHandling);
     }
 
     async getComicsByCharacterId(params:FindComicsByItemParams) {
@@ -77,7 +77,7 @@ export class MarvelAPI extends RESTDataSource {
             if (!comicResp) return null;
 
             return this.comicRespFormatterFunc(comicResp);
-        });
+        }).catch(this.marvelErrorHandling);
     }
 
     async getCharactersByComicId(params:FindCharactersByItemParams) {
@@ -117,7 +117,7 @@ export class MarvelAPI extends RESTDataSource {
             if (!storyResp) return null;
 
             return this.storyRespFormatterFunc(storyResp);
-        });
+        }).catch(this.marvelErrorHandling);
     }
 
     async getCharactersByStoryId(params:FindCharactersByItemParams) {
@@ -163,7 +163,7 @@ export class MarvelAPI extends RESTDataSource {
             if (!serieResp) return null;
 
             return this.serieRespFormatterFunc(serieResp);
-        });
+        }).catch(this.marvelErrorHandling);
     }
 
     async getCharactersBySerieId(params:FindCharactersByItemParams) {
@@ -209,7 +209,7 @@ export class MarvelAPI extends RESTDataSource {
             if (!eventResp) return null;
 
             return this.eventRespFormatterFunc(eventResp);
-        });
+        }).catch(this.marvelErrorHandling);
     }
 
     async getCharactersByEventId(params:FindCharactersByItemParams) {
@@ -255,7 +255,7 @@ export class MarvelAPI extends RESTDataSource {
             if (!creatorResp) return null;
 
             return this.creatorRespFormatterFunc(creatorResp);
-        });
+        }).catch(this.marvelErrorHandling);
     }
 
     async getStoriesByCreatorId(params:FindStoriesByItemParams) {
@@ -359,7 +359,7 @@ export class MarvelAPI extends RESTDataSource {
 
                 // return full response
                 return Object.assign(resp.data, { results: formattedItemsResp });
-            });
+            }).catch(this.marvelErrorHandling);
         }
     }
 
@@ -396,7 +396,21 @@ export class MarvelAPI extends RESTDataSource {
 
                 // return full response
                 return Object.assign(resp.data, { results: formattedItemsResp });
-            });
+            }).catch(this.marvelErrorHandling);
+        }
+    }
+
+    private marvelErrorHandling = (error:MarvelError) => {
+        const code = get(error, 'extensions.response.body.code', 'unknown code');
+        const status = get(error, 'extensions.response.body.status', 'unknown status');
+        
+        switch (code) {
+            case 404:
+            case 409:
+                throw new UserInputError(status, { code, marvelApiError: error });
+
+            default:
+                throw new ApolloError(status, code, error);
         }
     }
 }
@@ -548,4 +562,19 @@ interface FindCharactersByItemParams extends FindCharactersParams {
 interface FindCreatorsByItemParams extends FindCreatorsParams {
     /** The related resource id */
     id: Number;
+}
+
+interface MarvelError {
+    extensions: {
+        code: Number;
+        response: {
+            url: String;
+            status: Number;
+            statusText: String;
+            body: {
+                code: Number;
+                status: String;
+            }
+        }
+    }
 }
